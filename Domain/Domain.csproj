@@ -10,4 +10,8 @@
     <Folder Include="Repository Interfaces\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.28" />
+  </ItemGroup>
+
 </Project>

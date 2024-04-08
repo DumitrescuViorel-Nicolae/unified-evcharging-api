@@ -1,4 +1,5 @@
-﻿using Domain.DTOs;
+﻿using Application.Interfaces;
+using Domain.DTOs;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,17 +12,20 @@ namespace WebAPI.Controllers
     public class AuthController : ControllerBase
     {
         //Dependency Injection
+        private readonly IAuthService _authService;
 
-        public AuthController()
+        public AuthController(IAuthService authService)
         {
-
+            _authService = authService;
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public ActionResult<UserDTO> RegisterUser(UserDTO user)
+        public async Task<IActionResult> RegisterUser(UserDTO user)
         {
-            return Ok(user);
+            var response = await _authService.Register(user);
+
+            return Ok(response.Item2); //change that damned tuple
         }
     }
 }
