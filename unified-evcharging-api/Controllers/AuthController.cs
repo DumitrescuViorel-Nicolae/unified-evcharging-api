@@ -13,19 +13,34 @@ namespace WebAPI.Controllers
     {
         //Dependency Injection
         private readonly IAuthService _authService;
-
-        public AuthController(IAuthService authService)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> RegisterUser(UserDTO user)
         {
-            var response = await _authService.Register(user);
+            var response = await _authService.CreateAccount(user);
+            return Ok(response);
+        }
 
-            return Ok(response.Item2); //change that damned tuple
+        [HttpPost("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginDTO login)
+        {
+            var response = await _authService.LoginAccount(login);
+            return Ok(response);
+        }
+
+        [HttpGet("test")]
+        [Authorize]
+        public async Task<IActionResult> Test()
+        {
+            return Ok("test");
         }
     }
 }

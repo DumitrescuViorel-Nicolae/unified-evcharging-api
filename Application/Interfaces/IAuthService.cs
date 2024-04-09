@@ -1,14 +1,11 @@
 ﻿using Domain.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static Domain.DTOs.ServiceResponses;
 
 namespace Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<(int, string)> Register(UserDTO model);
+        Task<GeneralResponse> CreateAccount(UserDTO user);
+        Task<LoginResponse> LoginAccount(LoginDTO login);
     }
 }
