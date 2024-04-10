@@ -9,6 +9,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthController : ControllerBase
     {
         //Dependency Injection
@@ -34,13 +35,6 @@ namespace WebAPI.Controllers
         {
             var response = await _authService.LoginAccount(login);
             return Ok(response);
-        }
-
-        [HttpGet("test")]
-        [Authorize]
-        public async Task<IActionResult> Test()
-        {
-            return Ok("test");
         }
     }
 }

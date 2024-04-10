@@ -1,17 +1,12 @@
 ﻿using Application.Interfaces;
 using Domain.DTOs;
-using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using static Domain.DTOs.ServiceResponses;
 
 namespace Application.Services
@@ -86,6 +81,7 @@ namespace Application.Services
                 new Claim(ClaimTypes.Name, user.Name!),
                 new Claim(ClaimTypes.Email, user.Email!),
                 new Claim(ClaimTypes.Role, user.Role!),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString())
             };
 
             var token = new JwtSecurityToken(
