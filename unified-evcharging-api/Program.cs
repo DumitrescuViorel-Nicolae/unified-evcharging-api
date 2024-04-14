@@ -46,7 +46,15 @@ builder.Services.AddAuthentication(options =>
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
             };
         });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("defaultCors", builder =>
+    {
+        builder.WithOrigins("http://127.0.0.1:5173")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
 
 
 builder.Services.AddControllers();
@@ -98,6 +106,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("defaultCors");
 
 app.UseAuthentication();
 app.UseAuthorization();

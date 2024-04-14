@@ -53,21 +53,21 @@ namespace Application.Services
         public async Task<LoginResponse> LoginAccount(LoginDTO login)
         {
             if (login == null)
-                return new LoginResponse(false, null!, "Login container empty");
+                return new LoginResponse(false, null!, "Login container empty", null);
 
             var getUser = await userManager.FindByEmailAsync(login.Email);
             if (getUser is null)
-                return new LoginResponse(false, null!, "User not registered");
+                return new LoginResponse(false, null!, "User not registered", null);
 
             bool checkUserPassword = await userManager.CheckPasswordAsync(getUser, login.Password);
             if (!checkUserPassword)
-                return new LoginResponse(false, null!, "Invalid email/password");
+                return new LoginResponse(false, null!, "Invalid email/password", null);
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
             var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
 
             string token = GenerateToken(userSession);
-            return new LoginResponse(true, token!, "User logged in");
+            return new LoginResponse(true, token!, "User logged in", Role: getUserRole.FirstOrDefault());
         }
 
         private string GenerateToken(UserSession user)

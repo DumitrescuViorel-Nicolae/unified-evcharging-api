@@ -9,9 +9,9 @@ namespace Domain.Models
     public class UserRoles
     {
         /// <summary>
-        /// The role name for the administrator.
+        /// The role name for companies.
         /// </summary>
-        public const string Admin = "Admin";
+        public const string Company = "Company";
 
         /// <summary>
         /// The role name for regular users.
