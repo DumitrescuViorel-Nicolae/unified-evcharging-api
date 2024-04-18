@@ -1,11 +1,11 @@
-﻿using Domain.Models.DBModels;
+﻿using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Repository_Interfaces
+namespace Domain.Interfaces
 {
     public interface IEVStationRepository
     {

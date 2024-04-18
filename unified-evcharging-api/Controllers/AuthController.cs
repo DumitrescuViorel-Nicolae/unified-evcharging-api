@@ -12,9 +12,9 @@ namespace WebAPI.Controllers
     [Authorize]
     public class AuthController : ControllerBase
     {
-        //Dependency Injection
         private readonly IAuthService _authService;
         private readonly ILogger<AuthController> _logger;
+
         public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;

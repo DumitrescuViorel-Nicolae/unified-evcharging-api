@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.DTOs;
+using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +8,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using static Domain.DTOs.ServiceResponses;
 
 namespace Application.Services
 {
@@ -24,9 +24,9 @@ namespace Application.Services
             _configuration = configuration;
         }
 
-        public async Task<GeneralResponse> CreateAccount(UserDTO user)
+        public async Task<GeneralResponse<string>> CreateAccount(UserDTO user)
         {
-            if (user == null) return new GeneralResponse(false, "Model is empty");
+            if (user == null) return new GeneralResponse<string>(false, "Model is empty");
             var newUser = new ApplicationUser()
             {
                 Name = user.Username,
@@ -36,10 +36,10 @@ namespace Application.Services
             };
 
             var existingUser = await userManager.FindByEmailAsync(newUser.Email);
-            if (existingUser is not null) return new GeneralResponse(false, "User already registered");
+            if (existingUser is not null) return new GeneralResponse<string>(false, "User already registered");
 
             var createUser = await userManager.CreateAsync(newUser!, user.Password);
-            if (!createUser.Succeeded) return new GeneralResponse(false, $"Error occured in user creation, please try again - {createUser.Errors.FirstOrDefault()?.Description}");
+            if (!createUser.Succeeded) return new GeneralResponse<string>(false, $"Error occured in user creation, please try again - {createUser.Errors.FirstOrDefault()?.Description}");
 
             var checkUser = await roleManager.FindByNameAsync("User");
             if (checkUser is null)
@@ -47,27 +47,27 @@ namespace Application.Services
 
             await userManager.AddToRoleAsync(newUser, "User");
 
-            return new GeneralResponse(true, "Account created");
+            return new GeneralResponse<string>(true, "Account created");
         }
 
-        public async Task<LoginResponse> LoginAccount(LoginDTO login)
+        public async Task<GeneralResponse<string>> LoginAccount(LoginDTO login)
         {
             if (login == null)
-                return new LoginResponse(false, null!, "Login container empty", null);
+                return new GeneralResponse<string>(false, "Login container empty");
 
             var getUser = await userManager.FindByEmailAsync(login.Email);
             if (getUser is null)
-                return new LoginResponse(false, null!, "User not registered", null);
+                return new GeneralResponse<string>(false,"User not registered");
 
             bool checkUserPassword = await userManager.CheckPasswordAsync(getUser, login.Password);
             if (!checkUserPassword)
-                return new LoginResponse(false, null!, "Invalid email/password", null);
+                return new GeneralResponse<string>(false, "Invalid email/password");
 
             var getUserRole = await userManager.GetRolesAsync(getUser);
             var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
 
             string token = GenerateToken(userSession);
-            return new LoginResponse(true, token!, "User logged in", Role: getUserRole.FirstOrDefault());
+            return new GeneralResponse<string>(true, "User logged in", token!);
         }
 
         private string GenerateToken(UserSession user)

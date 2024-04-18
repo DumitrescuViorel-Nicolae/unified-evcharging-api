@@ -1,11 +1,11 @@
 ﻿using Domain.DTOs;
-using static Domain.DTOs.ServiceResponses;
+using Domain.Models;
 
 namespace Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<GeneralResponse> CreateAccount(UserDTO user);
-        Task<LoginResponse> LoginAccount(LoginDTO login);
+        Task<GeneralResponse<string>> CreateAccount(UserDTO user);
+        Task<GeneralResponse<string>> LoginAccount(LoginDTO login);
     }
 }
