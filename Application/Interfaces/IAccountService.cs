@@ -1,15 +1,13 @@
 ﻿using Domain.DTOs;
 using Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Interfaces
 {
     public interface IAccountService
     {
         Task<GeneralResponse<UserDTO>> GetUser(string userEmail);
+        Task<GeneralResponse<IdentityResult>> UpdateUser(UserDTO user);
+        Task<GeneralResponse<IdentityResult>> DeleteAccount(string accountID);
     }
 }
