@@ -8,10 +8,10 @@ namespace Infrastructure.Data
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) { }
 
-        public virtual DbSet<ConnectorDetail> ConnectorDetails { get; set; } = null!;
-        public virtual DbSet<ConnectorStatus> ConnectorStatuses { get; set; } = null!;
-        public virtual DbSet<EVStation> EVStation { get; set; } = null!;
-        public virtual DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
+        //public virtual DbSet<ConnectorDetail> ConnectorDetails { get; set; } = null!;
+        //public virtual DbSet<ConnectorStatus> ConnectorStatuses { get; set; } = null!;
+        //public virtual DbSet<EVStation> EVStation { get; set; } = null!;
+        //public virtual DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

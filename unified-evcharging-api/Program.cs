@@ -1,7 +1,9 @@
 using Application.Interfaces;
 using Application.Services;
+using Domain.Interfaces.EVStationRepository;
 using Infrastructure.Data;
 using Infrastructure.Mappings;
+using Infrastructure.Repositories.EVStationRepository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -92,8 +94,13 @@ builder.Services.AddSwaggerGen(options =>
 #endregion
 
 #region DI Container
+// Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IEVStationService, EVStationService>();
+
+// Repositories
+builder.Services.AddScoped<IEVStationRepository, EVStationRepository>();
 #endregion
 
 #region MiddlewarePipe
