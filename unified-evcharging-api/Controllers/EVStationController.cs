@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Domain.DTOs;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("getEVInfrastructure")]
-        public async Task<IEnumerable<EVStation>> GetInfra()
+        public async Task<IEnumerable<EVStationDTO>> GetInfra()
         {
            var result = await _evStationService.GetEVStations();
             return result;
