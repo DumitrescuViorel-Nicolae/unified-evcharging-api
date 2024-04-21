@@ -15,5 +15,8 @@ namespace Domain.Entities
         public string? Website { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+
+        public ICollection<ConnectorDetail> ConnectorDetail { get; set; }
+        public PaymentMethod PaymentMethod { get; set; }
     }
 }

@@ -1,17 +1,18 @@
 using Application.Interfaces;
 using Application.Services;
+using Domain.Interfaces.ConnectorRepository;
 using Domain.Interfaces.EVStationRepository;
+using Domain.Interfaces.PaymentRepository;
 using Infrastructure.Data;
 using Infrastructure.Mappings;
+using Infrastructure.Repositories.ConnectorRepository;
 using Infrastructure.Repositories.EVStationRepository;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Infrastructure.Repositories.PaymentRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Security.Cryptography.Xml;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -101,6 +102,9 @@ builder.Services.AddScoped<IEVStationService, EVStationService>();
 
 // Repositories
 builder.Services.AddScoped<IEVStationRepository, EVStationRepository>();
+builder.Services.AddScoped<IConnectorDetailsRepository, ConnectorDetailsRepository>();
+builder.Services.AddScoped<IConnectorStatusRepository, ConnectorStatusRepository>();
+builder.Services.AddScoped<IPaymentMethodsRepository, PaymentMethodsRepository>();
 #endregion
 
 #region MiddlewarePipe

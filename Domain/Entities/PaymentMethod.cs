@@ -11,5 +11,7 @@ namespace Domain.Entities
         public bool? OtherPaymentAccept { get; set; }
         public string? EPaymentTypes { get; set; }
         public string? OtherPaymentTypes { get; set; }
+
+        public EVStation EVStation { get; set; }
     }
 }

@@ -6,5 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.DTOs
 {
-    public record UserSession(string? Id, string? Name, string? Email, string? Role);
+    public class ConnectorStatusDto
+    {
+        public string PhysicalReference { get; set; }
+        public string State { get; set; }
+    }
 }

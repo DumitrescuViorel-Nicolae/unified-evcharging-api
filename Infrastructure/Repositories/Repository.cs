@@ -1,10 +1,12 @@
 ﻿using Infrastructure.Data;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using static Infrastructure.Utils.ErrorUtils;
 
 namespace Infrastructure.Repositories
 {
@@ -21,37 +23,96 @@ namespace Infrastructure.Repositories
 
         public async Task<TEntity> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            try
+            {
+                return await _dbSet.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while getting entity by ID.", ex);
+            }
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            try
+            {
+                return await _dbSet.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while getting all entities.", ex);
+            }
+        }
+
+        public async Task<IEnumerable<TEntity>> GetAllAsync(params Expression<Func<TEntity, object>>[] includeProperties)
+        {
+            try
+            {
+                IQueryable<TEntity> query = _dbSet;
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while getting all entities with includes.", ex);
+            }
         }
 
         public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return await _dbSet.Where(predicate).ToListAsync();
+            try
+            {
+                return await _dbSet.Where(predicate).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while finding entities.", ex);
+            }
         }
 
         public async Task<TEntity> AddAsync(TEntity entity)
         {
-            _dbSet.Add(entity);
-            await _context.SaveChangesAsync();
-            return entity;
+            try
+            {
+                _dbSet.Add(entity);
+                await _context.SaveChangesAsync();
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while adding entity.", ex);
+            }
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity)
         {
-            _context.Entry(entity).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return entity;
+            try
+            {
+                _context.Entry(entity).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while updating entity.", ex);
+            }
         }
 
         public async Task DeleteAsync(TEntity entity)
         {
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _dbSet.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while deleting entity.", ex);
+            }
         }
     }
 }

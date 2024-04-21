@@ -10,5 +10,8 @@ namespace Application.Interfaces
     public interface IEVStationService
     {
         Task<IEnumerable<EVStation>> GetAll();
+        Task<IEnumerable<EVStation>> GetEVStations();
+        Task<IEnumerable<ConnectorDetail>> GetAllConnectors();
+        Task<IEnumerable<PaymentMethod>> GetAllPaymentMethods();
     }
 }
