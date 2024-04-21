@@ -99,6 +99,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IEVStationService, EVStationService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 // Repositories
 builder.Services.AddScoped<IEVStationRepository, EVStationRepository>();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Application.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -7,15 +8,17 @@ namespace WebAPI.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        public PaymentController()
+        private readonly IPaymentService _paymentService;
+        public PaymentController(IPaymentService paymentService)
         {
-
+            _paymentService = paymentService;
         }
 
         [HttpPost("processEVPayment")]
         public IActionResult ProcessPayment()
         {
-            return Ok();
+           var payment = _paymentService.ProcessPayment();
+            return Ok(payment);
         }
     }
 }
