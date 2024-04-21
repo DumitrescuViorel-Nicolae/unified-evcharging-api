@@ -1,5 +1,6 @@
 ﻿using Domain.DTOs;
 using Domain.Entities;
+using Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,10 @@ namespace Application.Interfaces
 {
     public interface IEVStationService
     {
-        Task<IEnumerable<EVStation>> GetAll();
-        Task<IEnumerable<EVStationDTO>> GetEVStations();
-        Task<IEnumerable<ConnectorDetail>> GetAllConnectors();
-        Task<IEnumerable<PaymentMethod>> GetAllPaymentMethods();
+        Task<List<EVStationDTO>> GetEVStations();
+        Task<GeneralResponse<string>> AddEVStation(EVStation newEVStation);
+        Task<ConnectorDetail> GetConnectorDetails(int evStationID);
+        Task<PaymentMethod> GetPaymentMethods(int evStationID);
+        Task<GeneralResponse<string>> DeleteEVStationById(int id);
     }
 }

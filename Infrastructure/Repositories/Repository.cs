@@ -114,6 +114,30 @@ namespace Infrastructure.Repositories
                 throw new SqlErrorException("SQL error occurred while deleting entity.", ex);
             }
         }
+
+        public async Task<TEntity> DeleteByIdAsync(int id)
+        {
+            try
+            {
+                var entityToDelete = await _dbSet.FindAsync(id);
+
+                if (entityToDelete != null)
+                {
+                    _dbSet.Remove(entityToDelete);
+                    await _context.SaveChangesAsync();
+
+                    return entityToDelete;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new SqlErrorException("SQL error occurred while deleting entity.", ex);
+            }
+        }
     }
 }
 

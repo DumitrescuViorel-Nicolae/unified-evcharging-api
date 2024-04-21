@@ -4,6 +4,7 @@ using Domain.Entities;
 using Domain.Interfaces.ConnectorRepository;
 using Domain.Interfaces.EVStationRepository;
 using Domain.Interfaces.PaymentRepository;
+using Domain.Models;
 
 namespace Application.Services
 {
@@ -23,22 +24,17 @@ namespace Application.Services
             _connectorStatusRepository = connectorStatusRepository;
         }
 
-        public async Task<IEnumerable<EVStation>> GetAll()
+        public async Task<ConnectorDetail> GetConnectorDetails(int evStationID)
         {
-            return await _evStations.GetAllAsync();
+            return await _connectorDetails.GetByIdAsync(evStationID);
         }
 
-        public async Task<IEnumerable<ConnectorDetail>> GetAllConnectors()
+        public async Task<PaymentMethod> GetPaymentMethods(int evStationID)
         {
-            return await _connectorDetails.GetAllAsync();
+            return await _paymentMethods.GetByIdAsync(evStationID);
         }
 
-        public async Task<IEnumerable<PaymentMethod>> GetAllPaymentMethods()
-        {
-            return await _paymentMethods.GetAllAsync();
-        }
-
-        public async Task<IEnumerable<EVStationDTO>> GetEVStations()
+        public async Task<List<EVStationDTO>> GetEVStations()
         {
             var evStations = await _evStations.GetAllAsync(station => station.ConnectorDetail, 
                                                             station => station.PaymentMethod);
@@ -102,5 +98,61 @@ namespace Application.Services
                 }
             }).ToList();      
         }
+        public async Task<GeneralResponse<string>> AddEVStation(EVStation newEVStation)
+        {
+            try
+            {
+                var addedEVStation = await _evStations.AddAsync(newEVStation);
+
+                if(addedEVStation!= null)
+                {
+                    var paymentMethods = new PaymentMethod
+                    {
+                        EvStationId = addedEVStation.Id,
+                        EPaymentAccept = addedEVStation.PaymentMethod.EPaymentAccept,
+                        OtherPaymentAccept = addedEVStation.PaymentMethod.OtherPaymentAccept,
+                        EPaymentTypes = addedEVStation.PaymentMethod.EPaymentTypes,
+                        OtherPaymentTypes = addedEVStation.PaymentMethod.OtherPaymentTypes
+                    };
+
+                    await _paymentMethods.AddAsync(paymentMethods);
+
+                   foreach(var connectorDetail in addedEVStation.ConnectorDetail)
+                    {
+                        await _connectorDetails.AddAsync(connectorDetail);
+                    }
+                }
+
+                return new GeneralResponse<string>(true, "New EV Station added successfully!");
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse<string>(false, $"Error in creating a new EV Station - {ex.Message}");
+            }
+        }
+        public async Task<GeneralResponse<string>> DeleteEVStationById(int id)
+        {
+            try
+            {
+                var evStationToDelete = await _evStations.GetByIdAsync(id);
+                if (evStationToDelete != null)
+                {
+                    await _paymentMethods.DeleteByIdAsync(id);
+                    await _connectorDetails.DeleteByIdAsync(id);
+                    await _evStations.DeleteAsync(evStationToDelete);
+
+                    return new GeneralResponse<string>(true, "EV Station deleted successfully!");
+                }
+                else
+                {
+                    return new GeneralResponse<string>(false, "EV Station not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new GeneralResponse<string>(false, $"Error deleting EV Station: {ex.Message}");
+            }
+        }
+
     }
 }

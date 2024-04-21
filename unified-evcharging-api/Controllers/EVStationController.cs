@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.DTOs;
 using Domain.Entities;
+using Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,30 +17,38 @@ namespace WebAPI.Controllers
             _evStationService = evStationService;
         }
 
-        [HttpGet("getAll")]
-        public async Task<IEnumerable<EVStation>> GetAll()
-        {
-            return await _evStationService.GetAll();
-        }
-
         [HttpGet("getEVInfrastructure")]
-        public async Task<IEnumerable<EVStationDTO>> GetInfra()
+        public async Task<List<EVStationDTO>> GetEVInfra()
         {
            var result = await _evStationService.GetEVStations();
             return result;
         }
 
-        [HttpGet("getEVConnectorDetails")]
-        public async Task<IEnumerable<ConnectorDetail>> GetConnectors()
+        [HttpPost("addEVStation")]
+        public async Task<GeneralResponse<string>> AddEVStation(EVStation evStation)
         {
-            var connectorDetails = await _evStationService.GetAllConnectors();
+            var response = await _evStationService.AddEVStation(evStation);
+            return response;
+        }
+
+        [HttpDelete("deleteEVStation")]
+        public async Task<GeneralResponse<string>> DeleteEVStation(int evStationID)
+        {
+            var response = await _evStationService.DeleteEVStationById(evStationID);
+            return response;
+        }
+
+        [HttpGet("getEVConnectorDetails")]
+        public async Task<ConnectorDetail> GetEVConnectorDetails(int evStationID)
+        {
+            var connectorDetails = await _evStationService.GetConnectorDetails(evStationID);
             return connectorDetails;
         }
 
-        [HttpGet("getPaymentMethods")]
-        public async Task<IEnumerable<PaymentMethod>> GetPaymentMethods()
+        [HttpGet("getEVPaymentMethods")]
+        public async Task<PaymentMethod> GetEVPaymentMethods(int evStationID)
         {
-            return await _evStationService.GetAllPaymentMethods();
+            return await _evStationService.GetPaymentMethods(evStationID);
         }
     }
 }
