@@ -1,6 +1,8 @@
 ﻿using Application.Interfaces;
+using Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace WebAPI.Controllers
 {
@@ -15,10 +17,31 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("processEVPayment")]
-        public IActionResult ProcessPayment()
+        public async Task<IActionResult> ProcessPayment(string evStationStripeAccountId)
         {
-           var payment = _paymentService.ProcessPayment();
+            var payment = await _paymentService.ProcessPayment(evStationStripeAccountId);
             return Ok(payment);
+        }
+
+        [HttpPost("createNewStripeEVAccount")]
+        public async Task<IActionResult> CreateStripeAccount(StripeEVAccountDetails eVAccountDetails)
+        {
+            var response = await _paymentService.CreateEVConnectAccount(eVAccountDetails);
+            return Ok(response);
+        }
+
+        [HttpGet("getStripeEVAccount")]
+        public async Task<IActionResult> GetEVAccount(string accountID)
+        {
+            var response = await _paymentService.GetStripeEVAccount(accountID);
+            return Ok(response);
+        }
+
+        [HttpDelete("deleteStripeAccount")]
+        public async Task<IActionResult> DeleteAccount(string accountID)
+        {
+            var response = await _paymentService.DeleteAccount(accountID);
+            return Ok(response);
         }
     }
 }

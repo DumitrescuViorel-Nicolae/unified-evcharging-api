@@ -14,9 +14,10 @@ namespace Application.Services
         private readonly IConnectorDetailsRepository _connectorDetails;
         private readonly IConnectorStatusRepository _connectorStatusRepository;
         private readonly IPaymentMethodsRepository _paymentMethods;
-        public EVStationService(IEVStationRepository evStations, IConnectorDetailsRepository connectorDetails, 
-            IPaymentMethodsRepository paymentMethods, 
-            IConnectorStatusRepository connectorStatusRepository)
+
+        public EVStationService(IEVStationRepository evStations, IConnectorDetailsRepository connectorDetails,
+            IPaymentMethodsRepository paymentMethods,
+            IConnectorStatusRepository connectorStatusRepository, IPaymentService paymentService)
         {
             _evStations = evStations;
             _connectorDetails = connectorDetails;
@@ -128,6 +129,18 @@ namespace Application.Services
             catch (Exception ex)
             {
                 return new GeneralResponse<string>(false, $"Error in creating a new EV Station - {ex.Message}");
+            }
+        }
+        public async Task<GeneralResponse<string>> LinkStripeAccountID(int evStationId, string stripeAccountID)
+        {
+            try
+            {
+                await _evStations.LinkStripeAccountID(evStationId, stripeAccountID);
+                return new GeneralResponse<string>(true, "The selected EV station has been linked");
+            }
+            catch (Exception e)
+            {
+                return new GeneralResponse<string>(false, $"Link not successfull - {e.Message}");
             }
         }
         public async Task<GeneralResponse<string>> DeleteEVStationById(int id)

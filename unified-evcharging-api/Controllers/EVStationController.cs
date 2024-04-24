@@ -31,6 +31,13 @@ namespace WebAPI.Controllers
             return response;
         }
 
+        [HttpPatch("linkEVStation")]
+        public async Task<GeneralResponse<string>> LinkEVStationToStripe(int evStationID, string stripeAccountID)
+        {
+            var response = await _evStationService.LinkStripeAccountID(evStationID, stripeAccountID);
+            return response;
+        }
+
         [HttpDelete("deleteEVStation")]
         public async Task<GeneralResponse<string>> DeleteEVStation(int evStationID)
         {

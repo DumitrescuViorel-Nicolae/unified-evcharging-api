@@ -10,6 +10,7 @@ namespace Domain.DTOs
 {
     public class EVStationDTO
     {
+        public string? StripeAccountID { get; set; } 
         public string Brand { get; set; }
         public int TotalNumberOfConnectors { get; set; }
         public Address Address { get; set; }

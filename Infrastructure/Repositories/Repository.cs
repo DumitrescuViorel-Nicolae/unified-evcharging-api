@@ -1,19 +1,14 @@
 ﻿using Infrastructure.Data;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using static Infrastructure.Utils.ErrorUtils;
 
 namespace Infrastructure.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        private readonly ApplicationDBContext _context;
-        private readonly DbSet<TEntity> _dbSet;
+        protected readonly ApplicationDBContext _context;
+        protected readonly DbSet<TEntity> _dbSet;
 
         public Repository(ApplicationDBContext context)
         {
