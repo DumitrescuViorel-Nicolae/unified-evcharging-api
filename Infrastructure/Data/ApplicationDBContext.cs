@@ -7,7 +7,10 @@ namespace Infrastructure.Data
     public partial class ApplicationDBContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) { }
-
+        public DbSet<EVStation> EVstations { get; set; }
+        public DbSet<PaymentMethod> PaymentMethod { get; set; }
+        public DbSet<ConnectorDetail> ConnectorDetail { get; set; }
+        public DbSet<ConnectorStatus> ConnectorStatus { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
          

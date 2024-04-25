@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using AutoMapper;
 using Domain.DTOs;
 using Domain.Entities;
 using Domain.Interfaces.ConnectorRepository;
@@ -14,15 +15,18 @@ namespace Application.Services
         private readonly IConnectorDetailsRepository _connectorDetails;
         private readonly IConnectorStatusRepository _connectorStatusRepository;
         private readonly IPaymentMethodsRepository _paymentMethods;
+        private readonly IMapper _mapper;
+
 
         public EVStationService(IEVStationRepository evStations, IConnectorDetailsRepository connectorDetails,
             IPaymentMethodsRepository paymentMethods,
-            IConnectorStatusRepository connectorStatusRepository, IPaymentService paymentService)
+            IConnectorStatusRepository connectorStatusRepository, IPaymentService paymentService, IMapper mapper)
         {
             _evStations = evStations;
             _connectorDetails = connectorDetails;
             _paymentMethods = paymentMethods;
             _connectorStatusRepository = connectorStatusRepository;
+            _mapper = mapper;
         }
 
         public async Task<ConnectorDetail> GetConnectorDetails(int evStationID)
@@ -99,11 +103,12 @@ namespace Application.Services
                 }
             }).ToList();      
         }
-        public async Task<GeneralResponse<string>> AddEVStation(EVStation newEVStation)
+        public async Task<GeneralResponse<string>> AddEVStation(EVStationDTO newEVStation)
         {
             try
             {
-                var addedEVStation = await _evStations.AddAsync(newEVStation);
+                var newStation = _mapper.Map<EVStation>(newEVStation);
+                var addedEVStation = await _evStations.AddAsync(newStation);
 
                 if(addedEVStation!= null)
                 {

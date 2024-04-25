@@ -14,6 +14,6 @@ namespace Domain.DTOs
         public int MaxPowerLevel { get; set; }
         public string CustomerChargeLevel { get; set; }
         public string CustomerConnectorName { get; set; }
-        public List<ConnectorStatusDto> ConnectorsStatuses { get; set; }
+        public List<ConnectorStatusDto>? ConnectorsStatuses { get; set; }
     }
 }

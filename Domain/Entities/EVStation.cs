@@ -17,7 +17,7 @@ namespace Domain.Entities
         public decimal Longitude { get; set; }
         public string? StripeAccountID { get; set; }
 
-        public ICollection<ConnectorDetail> ConnectorDetail { get; set; }
-        public PaymentMethod PaymentMethod { get; set; }
+        public ICollection<ConnectorDetail>? ConnectorDetail { get; set; }
+        public PaymentMethod? PaymentMethod { get; set; }
     }
 }

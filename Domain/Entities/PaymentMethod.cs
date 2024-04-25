@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -12,6 +14,7 @@ namespace Domain.Entities
         public string EPaymentTypes { get; set; }
         public string OtherPaymentTypes { get; set; }
 
-        public EVStation EVStation { get; set; }
+        [ForeignKey("EVStationId")]
+        public EVStation? EVStation { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
@@ -15,6 +16,7 @@ namespace Domain.Entities
         public string? CustomerConnectorName { get; set; }
         public bool? Pay { get; set; }
 
-        public EVStation EVStation { get; set; }
+        [ForeignKey("EVStationId")]
+        public EVStation? EVStation { get; set; }
     }
 }
