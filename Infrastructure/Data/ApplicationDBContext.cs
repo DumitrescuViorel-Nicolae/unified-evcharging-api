@@ -120,6 +120,50 @@ namespace Infrastructure.Data
                 entity.Property(e => e.OtherPaymentTypes).HasColumnName("otherPaymentTypes");
             });
 
+            modelBuilder.Entity<PaymentTransaction>(entity =>
+            {
+                entity.ToTable("PaymentTransactions");
+
+                entity.HasKey(e => e.TransactionId).HasName("transaction_id");
+
+                entity.Property(e => e.TransactionId)
+                    .HasColumnName("transaction_id")
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(e => e.Amount)
+                    .HasColumnName("amount")
+                    .HasColumnType("DECIMAL(10, 2)")
+                    .IsRequired();
+
+                entity.Property(e => e.Currency)
+                    .HasColumnName("currency")
+                    .HasMaxLength(3)
+                    .IsRequired();
+
+                entity.Property(e => e.PaymentMethodBrand)
+                    .HasColumnName("payment_method_brand")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.PaymentMethodLast4)
+                    .HasColumnName("payment_method_last4")
+                    .HasMaxLength(4);
+
+                entity.Property(e => e.Status)
+                    .HasColumnName("status")
+                    .HasMaxLength(20)
+                    .IsRequired();
+
+                entity.Property(e => e.ReceiptUrl)
+                    .HasColumnName("receipt_url")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.CreatedAt)
+                    .HasColumnName("created_at")
+                    .HasColumnType("datetime");
+            });
+
+
             OnModelCreatingPartial(modelBuilder);
         }
 

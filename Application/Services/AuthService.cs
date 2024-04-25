@@ -41,11 +41,24 @@ namespace Application.Services
             var createUser = await userManager.CreateAsync(newUser!, user.Password);
             if (!createUser.Succeeded) return new GeneralResponse<string>(false, $"Error occured in user creation, please try again - {createUser.Errors.FirstOrDefault()?.Description}");
 
-            var checkUser = await roleManager.FindByNameAsync("User");
-            if (checkUser is null)
-                await roleManager.CreateAsync(new IdentityRole() { Name = "User" });
+            if (user.Role is not null)
+            {
+                if (user.Role == UserRoles.User || user.Role == UserRoles.Company || user.Role == UserRoles.Admin)
+                {
+                    var checkForUserRole = await roleManager.FindByNameAsync(user.Role);
 
-            await userManager.AddToRoleAsync(newUser, "User");
+                    //this can be deleted after all flows are created
+                    if (checkForUserRole is null)
+                    {
+                        await roleManager.CreateAsync(new IdentityRole { Name = user.Role});
+                    }
+                    await userManager.AddToRoleAsync(newUser, user.Role);
+                }
+            }
+            else
+            {
+                await userManager.AddToRoleAsync(newUser, UserRoles.User);
+            }
 
             return new GeneralResponse<string>(true, "Account created");
         }
@@ -57,7 +70,7 @@ namespace Application.Services
 
             var getUser = await userManager.FindByEmailAsync(login.Email);
             if (getUser is null)
-                return new GeneralResponse<string>(false,"User not registered");
+                return new GeneralResponse<string>(false, "User not registered");
 
             bool checkUserPassword = await userManager.CheckPasswordAsync(getUser, login.Password);
             if (!checkUserPassword)

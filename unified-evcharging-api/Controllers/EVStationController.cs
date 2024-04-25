@@ -2,8 +2,11 @@
 using Domain.DTOs;
 using Domain.Entities;
 using Domain.Models;
+using Infrastructure.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WebAPI.Controllers
 {
@@ -25,6 +28,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("addEVStation")]
+        [Authorize(Roles = "Company")]
         public async Task<GeneralResponse<string>> AddEVStation(EVStationDTO evStation)
         {
             var response = await _evStationService.AddEVStation(evStation);
@@ -32,6 +36,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPatch("linkEVStation")]
+        [Authorize(Roles = "Company")]
         public async Task<GeneralResponse<string>> LinkEVStationToStripe(int evStationID, string stripeAccountID)
         {
             var response = await _evStationService.LinkStripeAccountID(evStationID, stripeAccountID);
@@ -39,6 +44,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("deleteEVStation")]
+        [Authorize(Roles = "Company")]
         public async Task<GeneralResponse<string>> DeleteEVStation(int evStationID)
         {
             var response = await _evStationService.DeleteEVStationById(evStationID);

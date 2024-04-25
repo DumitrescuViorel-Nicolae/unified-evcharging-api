@@ -11,5 +11,11 @@
         /// The role name for regular users.
         /// </summary>
         public const string User = "User";
+
+        /// <summary>
+        /// The role name for admin users.
+        /// </summary>
+        public const string Admin = "Admin";
+
     }
 }

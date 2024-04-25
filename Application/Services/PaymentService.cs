@@ -1,4 +1,7 @@
 ﻿using Application.Interfaces;
+using AutoMapper;
+using Domain.Entities;
+using Domain.Interfaces.PaymentTransactionRepository;
 using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Stripe;
@@ -13,8 +16,10 @@ namespace Application.Services
         private readonly Stripe.AccountService _stripeAccountService;
         private readonly PersonService _stripePersonService;
         private readonly PaymentIntentService _paymentIntentService;
+        private readonly IPaymentTransactionRepository _paymentRepository;
+        private readonly IMapper _mapper;
 
-        public PaymentService(IConfiguration configuration)
+        public PaymentService(IConfiguration configuration, IPaymentTransactionRepository paymentRepository, IMapper mapper)
         {
             StripeAPIKey = configuration["Stripe:APIKey"];
             StripeConfiguration.ApiKey = StripeAPIKey;
@@ -22,6 +27,8 @@ namespace Application.Services
             _stripeAccountService = new();
             _stripePersonService = new();
             _paymentIntentService = new();
+            _paymentRepository = paymentRepository;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -58,6 +65,8 @@ namespace Application.Services
 
                 if (paymentIntent.Status == "succeeded")
                 {
+                    var paymentTransaction = _mapper.Map<PaymentTransaction>(paymentIntent);
+                    await _paymentRepository.AddAsync(paymentTransaction);
                     return new GeneralResponse<PaymentIntent>(true, "Payment succeeded", paymentIntent);
                 }
                 else

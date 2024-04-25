@@ -47,6 +47,18 @@ CREATE TABLE PaymentMethod (
     otherPaymentTypes NVARCHAR(MAX)
 );
 
+CREATE TABLE PaymentTransactions (
+    transaction_id VARCHAR(50) PRIMARY KEY,
+    amount DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(3) NOT NULL,
+    payment_method_brand VARCHAR(20),
+    payment_method_last4 VARCHAR(4),
+    status VARCHAR(20) NOT NULL,
+    receipt_url VARCHAR(255),
+    created_at DATETIME
+);
+
+
 ----------------------------------------------------------------------INSERTS-----------------------------------------------------------------------------------------------------------------
 
 -- Insert entry 1

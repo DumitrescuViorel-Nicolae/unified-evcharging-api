@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Stripe;
@@ -24,6 +25,8 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("createNewStripeEVAccount")]
+        [Authorize(Roles = "Admin")]
+        //to consider triggering automatically on new EVStation inserts
         public async Task<IActionResult> CreateStripeAccount(StripeEVAccountDetails eVAccountDetails)
         {
             var response = await _paymentService.CreateEVConnectAccount(eVAccountDetails);
@@ -38,6 +41,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("deleteStripeAccount")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAccount(string accountID)
         {
             var response = await _paymentService.DeleteAccount(accountID);

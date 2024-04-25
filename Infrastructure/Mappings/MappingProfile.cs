@@ -2,6 +2,7 @@
 using Domain.DTOs;
 using Domain.Entities;
 using Infrastructure.Data;
+using Stripe;
 
 namespace Infrastructure.Mappings
 {
@@ -24,7 +25,7 @@ namespace Infrastructure.Mappings
                 .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Position.Longitude))
                 .ForMember(dest => dest.StripeAccountID, opt => opt.MapFrom(src => src.StripeAccountID));
 
-            CreateMap<PaymentMethodDTO, PaymentMethod>()
+            CreateMap<PaymentMethodDTO, Domain.Entities.PaymentMethod>()
                  .ForMember(dest => dest.EPaymentAccept, opt => opt.MapFrom(src => src.EPayment.Accept))
                 .ForMember(dest => dest.OtherPaymentAccept, opt => opt.MapFrom(src => src.Other.Accept))
                 .ForMember(dest => dest.EPaymentTypes, opt => opt.MapFrom(src => string.Join(", ", src.EPayment.Types.Type)))
@@ -40,6 +41,16 @@ namespace Infrastructure.Mappings
             CreateMap<ConnectorStatusDto, ConnectorStatus>()
                 .ForMember(dest => dest.PhysicalReference, opt => opt.MapFrom(src => src.PhysicalReference))
                 .ForMember(dest => dest.State, opt => opt.MapFrom(src => src.State));
+
+            CreateMap<PaymentIntent, PaymentTransaction>()
+                .ForMember(dest => dest.TransactionId, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Amount, opt => opt.MapFrom(src => src.Amount / 100m)) 
+                .ForMember(dest => dest.Currency, opt => opt.MapFrom(src => src.Currency))
+                .ForMember(dest => dest.PaymentMethodBrand, opt => opt.MapFrom(src => src.PaymentMethodTypes[0])) 
+                .ForMember(dest => dest.PaymentMethodLast4, opt => opt.MapFrom(src => src.PaymentMethod.Id))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.ReceiptUrl, opt => opt.MapFrom(src => src.Charges.Data[0].ReceiptUrl))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.Created));
         }
     }
 }

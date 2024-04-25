@@ -3,6 +3,7 @@ using Application.Services;
 using Domain.Interfaces.ConnectorRepository;
 using Domain.Interfaces.EVStationRepository;
 using Domain.Interfaces.PaymentRepository;
+using Domain.Interfaces.PaymentTransactionRepository;
 using Infrastructure.Data;
 using Infrastructure.Mappings;
 using Infrastructure.Repositories.ConnectorRepository;
@@ -106,6 +107,7 @@ builder.Services.AddScoped<IEVStationRepository, EVStationRepository>();
 builder.Services.AddScoped<IConnectorDetailsRepository, ConnectorDetailsRepository>();
 builder.Services.AddScoped<IConnectorStatusRepository, ConnectorStatusRepository>();
 builder.Services.AddScoped<IPaymentMethodsRepository, PaymentMethodsRepository>();
+builder.Services.AddScoped<IPaymentTransactionRepository, PaymentTransactions>();
 #endregion
 
 #region MiddlewarePipe
