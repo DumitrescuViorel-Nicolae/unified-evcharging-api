@@ -16,7 +16,6 @@ namespace Domain.Entities
         public string? CustomerConnectorName { get; set; }
         public bool? Pay { get; set; }
 
-        [ForeignKey("EVStationId")]
         public EVStation? EVStation { get; set; }
     }
 }

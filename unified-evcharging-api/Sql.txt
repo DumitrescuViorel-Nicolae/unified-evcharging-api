@@ -38,7 +38,7 @@ CREATE TABLE ConnectorStatus (
 );
 
 -- Create table for payment methods
-CREATE TABLE PaymentMethods (
+CREATE TABLE PaymentMethod (
     id INT PRIMARY KEY IDENTITY(1,1),
     evStationId INT,
     ePaymentAccept BIT,
@@ -113,3 +113,65 @@ VALUES (SCOPE_IDENTITY(), '001', 'AVAILABLE'),
 
 INSERT INTO PaymentMethods (evStationId, ePaymentAccept, otherPaymentAccept, ePaymentTypes, otherPaymentTypes)
 VALUES (@stationId3, 1, 0, 'online-apple-pay, online-google-pay', '');
+
+
+{
+  "stripeAccountID": "stripe123",
+  "brand": "E.ON",
+  "totalNumberOfConnectors": 4,
+  "address": {
+    "street": "Main Street",
+    "city": "Anytown",
+    "country": "USA"
+  },
+  "contacts": {
+    "phone": "123-456-7890",
+    "website": "https://www.example.com"
+  },
+  "position": {
+    "latitude": 40.7128,
+    "longitude": -74.0060
+  },
+  "connectorDetails": [
+    {
+      "supplierName": "ABC Inc.",
+      "connectorType": "Type 2",
+      "chargeCapacity": "230-230VAC, 3-phase at max 32A",
+      "maxPowerLevel": 22,
+      "customerChargeLevel": "Level 3",
+      "customerConnectorName": "Type 2 Connector",
+      "connectorsStatuses": [
+        {
+          "physicalReference": "A1",
+          "state": "Available"
+        },
+        {
+          "physicalReference": "B2",
+          "state": "Occupied"
+        }
+      ]
+    }
+  ],
+  "paymentMethods": {
+    "ePayment": {
+      "accept": true,
+      "types": {
+        "type": [
+          "online-apple-pay",
+          "online-google-pay"
+        ]
+      }
+    },
+    "other": {
+      "accept": true,
+      "types": {
+        "type": [
+          "rfid-reader",
+          "app",
+          "contactless-card",
+          "auth-by-car-plug-and-charge"
+        ]
+      }
+    }
+  }
+}

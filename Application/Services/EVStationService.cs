@@ -112,21 +112,26 @@ namespace Application.Services
 
                 if(addedEVStation!= null)
                 {
-                    var paymentMethods = new PaymentMethod
-                    {
-                        EvStationId = addedEVStation.Id,
-                        EPaymentAccept = addedEVStation.PaymentMethod.EPaymentAccept,
-                        OtherPaymentAccept = addedEVStation.PaymentMethod.OtherPaymentAccept,
-                        EPaymentTypes = addedEVStation.PaymentMethod.EPaymentTypes,
-                        OtherPaymentTypes = addedEVStation.PaymentMethod.OtherPaymentTypes
-                    };
+                    var evStationID = addedEVStation.Id;
+                    var paymentMethods = _mapper.Map<PaymentMethod>(newEVStation.PaymentMethods);
 
                     await _paymentMethods.AddAsync(paymentMethods);
 
-                   foreach(var connectorDetail in addedEVStation.ConnectorDetail)
+                   foreach(var connectorDetail in newEVStation.ConnectorDetails)
                     {
-                        await _connectorDetails.AddAsync(connectorDetail);
+                        var connectorDetails = _mapper.Map<ConnectorDetail>(connectorDetail);
+                        var insertedDetail = await _connectorDetails.AddAsync(connectorDetails);
+                        insertedDetail.EvStationId = evStationID;
+
+                        foreach (var connectorStatus in connectorDetail.ConnectorsStatuses)
+                        {
+                            var id = insertedDetail.Id;
+                            var connectorStatusToInsert = _mapper.Map<ConnectorStatus>(connectorStatus);
+                            connectorStatusToInsert.ConnectorDetailsId = id;
+                            await _connectorStatusRepository.AddAsync(connectorStatusToInsert);
+                        }
                     }
+
                 }
 
                 return new GeneralResponse<string>(true, "New EV Station added successfully!");

@@ -14,7 +14,6 @@ namespace Domain.Entities
         public string EPaymentTypes { get; set; }
         public string OtherPaymentTypes { get; set; }
 
-        [ForeignKey("EVStationId")]
         public EVStation? EVStation { get; set; }
     }
 }
