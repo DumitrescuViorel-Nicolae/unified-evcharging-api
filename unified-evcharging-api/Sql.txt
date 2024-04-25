@@ -1,0 +1,115 @@
+﻿-- Create table for EV stations
+-- On Name DB UnifiedEvChargingDB
+CREATE TABLE EVStations (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    brand NVARCHAR(255),
+    totalNumberOfConnectors INT,
+    street NVARCHAR(255),
+    city NVARCHAR(255),
+    country NVARCHAR(255),
+    phone NVARCHAR(20),
+    website NVARCHAR(255),
+    latitude DECIMAL(9,6),
+    longitude DECIMAL(9,6)
+);
+
+ALTER TABLE EVStations
+ADD StripeAccountID VARCHAR(255);
+
+-- Create table for connector details
+CREATE TABLE ConnectorDetail (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    evStationId INT,
+    supplierName NVARCHAR(255),
+    connectorType NVARCHAR(255),
+    chargeCapacity NVARCHAR(255),
+    maxPowerLevel INT,
+    customerChargeLevel NVARCHAR(10),
+    customerConnectorName NVARCHAR(255),
+    pay BIT
+);
+
+-- Create table for connector status
+CREATE TABLE ConnectorStatus (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    connectorDetailsId INT,
+    physicalReference NVARCHAR(10),
+    state NVARCHAR(50)
+);
+
+-- Create table for payment methods
+CREATE TABLE PaymentMethods (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    evStationId INT,
+    ePaymentAccept BIT,
+    otherPaymentAccept BIT,
+    ePaymentTypes NVARCHAR(MAX),
+    otherPaymentTypes NVARCHAR(MAX)
+);
+
+----------------------------------------------------------------------INSERTS-----------------------------------------------------------------------------------------------------------------
+
+-- Insert entry 1
+INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude)
+VALUES ('E.ON', 4, 'Strada Batiștei', 'Bucharest', 'Romania', '+4980012189555', 'https://www.eon.com/en/private-customers/eon-drive.html', 44.4362, 26.0999);
+
+DECLARE @stationId1 INT;
+SET @stationId1 = SCOPE_IDENTITY();
+
+INSERT INTO ConnectorDetails (evStationId, supplierName, connectorType, chargeCapacity, maxPowerLevel, customerChargeLevel, customerConnectorName, pay)
+VALUES (@stationId1, 'E.ON', 'IEC 62196-2 type 2 (Mennekes)', '230-230VAC, 3-phase at max 32A', 22, '3', 'AC EV connector (Mennekes - type 2)', 1);
+
+INSERT INTO ConnectorStatus (connectorDetailsId, physicalReference, state)
+VALUES (SCOPE_IDENTITY(), '01010', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '01010', 'OCCUPIED'),
+       (SCOPE_IDENTITY(), '01015', 'OUT_OF_SERVICE'),
+       (SCOPE_IDENTITY(), '01015', 'OUT_OF_SERVICE');
+
+INSERT INTO PaymentMethods (evStationId, ePaymentAccept, otherPaymentAccept, ePaymentTypes, otherPaymentTypes)
+VALUES (@stationId1, 1, 1, 'online-apple-pay, online-google-pay', 'rfid-reader, app, contactless-card, auth-by-car-plug-and-charge');
+
+
+-- Insert entry 2
+INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude)
+VALUES ('Tesla Supercharger', 8, 'Bulevardul Lascăr Catargiu', 'Bucharest', 'Romania', '+40213161036', 'https://www.tesla.com/en_ro/supercharger', 44.4464, 26.0974);
+
+DECLARE @stationId2 INT;
+SET @stationId2 = SCOPE_IDENTITY();
+
+INSERT INTO ConnectorDetails (evStationId, supplierName, connectorType, chargeCapacity, maxPowerLevel, customerChargeLevel, customerConnectorName, pay)
+VALUES (@stationId2, 'Tesla', 'Tesla Supercharger', '480VAC, max 150kW', 150, '3', 'Supercharger', 1);
+
+INSERT INTO ConnectorStatus (connectorDetailsId, physicalReference, state)
+VALUES (SCOPE_IDENTITY(), '001', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '002', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '003', 'OUT_OF_SERVICE'),
+       (SCOPE_IDENTITY(), '004', 'OCCUPIED'),
+       (SCOPE_IDENTITY(), '005', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '006', 'OUT_OF_SERVICE'),
+       (SCOPE_IDENTITY(), '007', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '008', 'AVAILABLE');
+
+INSERT INTO PaymentMethods (evStationId, ePaymentAccept, otherPaymentAccept, ePaymentTypes, otherPaymentTypes)
+VALUES (@stationId2, 0, 1, '', 'rfid-reader, app, contactless-card');
+
+
+-- Insert entry 3
+INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude)
+VALUES ('IONITY', 6, 'Bulevardul Mihail Kogălniceanu', 'Bucharest', 'Romania', '+40215680364', 'https://ionity.eu/', 44.4406, 26.0975);
+
+DECLARE @stationId3 INT;
+SET @stationId3 = SCOPE_IDENTITY();
+
+INSERT INTO ConnectorDetails (evStationId, supplierName, connectorType, chargeCapacity, maxPowerLevel, customerChargeLevel, customerConnectorName, pay)
+VALUES (@stationId3, 'IONITY', 'CCS Combo 2', '400VDC, max 350kW', 350, '4', 'CCS Combo 2', 0);
+
+INSERT INTO ConnectorStatus (connectorDetailsId, physicalReference, state)
+VALUES (SCOPE_IDENTITY(), '001', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '002', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '003', 'OUT_OF_SERVICE'),
+       (SCOPE_IDENTITY(), '004', 'OCCUPIED'),
+       (SCOPE_IDENTITY(), '005', 'AVAILABLE'),
+       (SCOPE_IDENTITY(), '006', 'OUT_OF_SERVICE');
+
+INSERT INTO PaymentMethods (evStationId, ePaymentAccept, otherPaymentAccept, ePaymentTypes, otherPaymentTypes)
+VALUES (@stationId3, 1, 0, 'online-apple-pay, online-google-pay', '');
