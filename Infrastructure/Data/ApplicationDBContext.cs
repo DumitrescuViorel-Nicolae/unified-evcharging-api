@@ -20,6 +20,8 @@ namespace Infrastructure.Data
             {
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.HasMany(e => e.ConnectorStatuses).WithOne(e => e.ConnectorDetails);
+
                 entity.Property(e => e.ChargeCapacity)
                     .HasMaxLength(255)
                     .HasColumnName("chargeCapacity");
@@ -67,6 +69,8 @@ namespace Infrastructure.Data
             modelBuilder.Entity<EVStation>(entity =>
             {
                 entity.ToTable("EVStations");
+                entity.HasOne(e => e.PaymentMethod).WithOne(e => e.EVStation);
+                entity.HasMany(e => e.ConnectorDetail).WithOne(e => e.EVStation);
 
                 entity.Property(e => e.Id).HasColumnName("id");
 

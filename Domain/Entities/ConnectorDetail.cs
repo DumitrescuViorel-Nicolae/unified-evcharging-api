@@ -15,7 +15,10 @@ namespace Domain.Entities
         public string? CustomerChargeLevel { get; set; }
         public string? CustomerConnectorName { get; set; }
         public bool? Pay { get; set; }
+        public ICollection<ConnectorStatus> ConnectorStatuses { get; set; }
+
 
         public EVStation? EVStation { get; set; }
+
     }
 }
