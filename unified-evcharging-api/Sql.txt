@@ -1,5 +1,4 @@
 ﻿-- Create table for EV stations
--- On Name DB UnifiedEvChargingDB
 CREATE TABLE EVStations (
     id INT PRIMARY KEY IDENTITY(1,1),
     brand NVARCHAR(255),
@@ -10,11 +9,11 @@ CREATE TABLE EVStations (
     phone NVARCHAR(20),
     website NVARCHAR(255),
     latitude DECIMAL(9,6),
-    longitude DECIMAL(9,6)
+    longitude DECIMAL(9,6),
+    StripeAccountID VARCHAR(255),
+    CompanyName NVARCHAR(255),
+    CompanyId INT
 );
-
-ALTER TABLE EVStations
-ADD StripeAccountID VARCHAR(255);
 
 -- Create table for connector details
 CREATE TABLE ConnectorDetail (
@@ -47,6 +46,7 @@ CREATE TABLE PaymentMethod (
     otherPaymentTypes NVARCHAR(MAX)
 );
 
+-- Create table for payment transactions
 CREATE TABLE PaymentTransactions (
     transaction_id VARCHAR(50) PRIMARY KEY,
     amount DECIMAL(10, 2) NOT NULL,
@@ -58,12 +58,47 @@ CREATE TABLE PaymentTransactions (
     created_at DATETIME
 );
 
+-- Create table for registered companies
+CREATE TABLE RegisteredCompanies (
+    id INT PRIMARY KEY IDENTITY(1,1),
+    UserId NVARCHAR(450) NOT NULL, -- Foreign key to AspNetUsers table
+    CompanyName NVARCHAR(255) NOT NULL,
+    StripeAccountID NVARCHAR(255),
+    RegistrationNumber NVARCHAR(50),
+    TaxNumber NVARCHAR(50),
+    Country NVARCHAR(100),
+    City NVARCHAR(100),
+    StreetName NVARCHAR(255),
+    ZipCode NVARCHAR(20),
+    CONSTRAINT FK_RegisteredCompanies_AspNetUsers FOREIGN KEY (UserId) REFERENCES AspNetUsers(Id)
+);
+
+-- Create foreign key relationship between EVStations and RegisteredCompanies
+ALTER TABLE EVStations
+ADD CONSTRAINT FK_EVStations_RegisteredCompanies FOREIGN KEY (CompanyId) REFERENCES RegisteredCompanies(id);
+
+-- Add indexes for performance
+CREATE INDEX IX_RegisteredCompanies_UserId ON RegisteredCompanies(UserId);
+CREATE INDEX IX_EVStations_CompanyId ON EVStations(CompanyId);
+
 
 ----------------------------------------------------------------------INSERTS-----------------------------------------------------------------------------------------------------------------
 
+-- Insert a user (Assuming AspNetUsers table exists and user creation is managed by ASP.NET Identity)
+DECLARE @userId NVARCHAR(450) = NEWID();
+INSERT INTO AspNetUsers (Id, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnd, LockoutEnabled, AccessFailedCount, Name)
+VALUES (@userId, 'companyUser', 'COMPANYUSER', 'company@example.com', 'COMPANY@EXAMPLE.COM', 1, 'passwordHash', 'securityStamp', NEWID(), '1234567890', 1, 0, NULL, 1, 0, 'Company User');
+
+-- Insert a company and link it to the user
+DECLARE @companyId INT;
+INSERT INTO RegisteredCompanies (UserId, CompanyName, StripeAccountID, RegistrationNumber, TaxNumber, Country, City, StreetName, ZipCode)
+VALUES (@userId, 'Example Company', 'stripe_account_id', 'REG123456', 'TAX123456', 'USA', 'New York', '5th Avenue', '10001');
+SET @companyId = SCOPE_IDENTITY();
+
+-- Insert EV stations and link them to the newly created company
 -- Insert entry 1
-INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, StripeAccountID)
-VALUES ('E.ON', 4, 'Strada Batiștei', 'Bucharest', 'Romania', '+4980012189555', 'https://www.eon.com/en/private-customers/eon-drive.html', 44.4362, 26.0999, NULL);
+INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, StripeAccountID, CompanyName, CompanyId)
+VALUES ('E.ON', 4, 'Strada Batiștei', 'Bucharest', 'Romania', '+4980012189555', 'https://www.eon.com/en/private-customers/eon-drive.html', 44.4362, 26.0999, NULL, 'E.ON', @companyId);
 
 DECLARE @stationId1 INT;
 SET @stationId1 = SCOPE_IDENTITY();
@@ -80,10 +115,9 @@ VALUES (SCOPE_IDENTITY(), '01010', 'AVAILABLE'),
 INSERT INTO PaymentMethod (evStationId, ePaymentAccept, otherPaymentAccept, ePaymentTypes, otherPaymentTypes)
 VALUES (@stationId1, 1, 1, 'online-apple-pay, online-google-pay', 'rfid-reader, app, contactless-card, auth-by-car-plug-and-charge');
 
-
 -- Insert entry 2
-INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, StripeAccountID)
-VALUES ('Tesla Supercharger', 8, 'Bulevardul Lascăr Catargiu', 'Bucharest', 'Romania', '+40213161036', 'https://www.tesla.com/en_ro/supercharger', 44.4464, 26.0974, NULL);
+INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, StripeAccountID, CompanyName, CompanyId)
+VALUES ('Tesla Supercharger', 8, 'Bulevardul Lascăr Catargiu', 'Bucharest', 'Romania', '+40213161036', 'https://www.tesla.com/en_ro/supercharger', 44.4464, 26.0974, NULL, 'Tesla', @companyId);
 
 DECLARE @stationId2 INT;
 SET @stationId2 = SCOPE_IDENTITY();
@@ -104,10 +138,9 @@ VALUES (SCOPE_IDENTITY(), '001', 'AVAILABLE'),
 INSERT INTO PaymentMethod (evStationId, ePaymentAccept, otherPaymentAccept, ePaymentTypes, otherPaymentTypes)
 VALUES (@stationId2, 0, 1, '', 'rfid-reader, app, contactless-card');
 
-
 -- Insert entry 3
-INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, StripeAccountID)
-VALUES ('IONITY', 6, 'Bulevardul Mihail Kogălniceanu', 'Bucharest', 'Romania', '+40215680364', 'https://ionity.eu/', 44.4406, 26.0975, NULL);
+INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, StripeAccountID, CompanyName, CompanyId)
+VALUES ('IONITY', 6, 'Bulevardul Mihail Kogălniceanu', 'Bucharest', 'Romania', '+40215680364', 'https://ionity.eu/', 44.4406, 26.0975, NULL, 'IONITY', @companyId);
 
 DECLARE @stationId3 INT;
 SET @stationId3 = SCOPE_IDENTITY();
