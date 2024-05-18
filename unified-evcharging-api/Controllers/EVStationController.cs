@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("addEVStation")]
-        [Authorize(Roles = "Company")]
+        
         public async Task<GeneralResponse<string>> AddEVStation(EVStationDTO evStation)
         {
             var response = await _evStationService.AddEVStation(evStation);
@@ -44,7 +44,6 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("deleteEVStation")]
-        [Authorize(Roles = "Company")]
         public async Task<GeneralResponse<string>> DeleteEVStation(int evStationID)
         {
             var response = await _evStationService.DeleteEVStationById(evStationID);

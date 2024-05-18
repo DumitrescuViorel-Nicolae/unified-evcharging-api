@@ -115,7 +115,8 @@ namespace Application.Services
                     var evStationID = addedEVStation.Id;
                     var paymentMethods = _mapper.Map<PaymentMethod>(newEVStation.PaymentMethods);
 
-                    await _paymentMethods.AddAsync(paymentMethods);
+                    var insertedPaymentMethod = await _paymentMethods.AddAsync(paymentMethods);
+                    insertedPaymentMethod.EvStationId = evStationID;
 
                    foreach(var connectorDetail in newEVStation.ConnectorDetails)
                     {

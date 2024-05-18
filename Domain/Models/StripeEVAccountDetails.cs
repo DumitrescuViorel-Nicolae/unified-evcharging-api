@@ -8,7 +8,7 @@ namespace Domain.Models
 {
     public class StripeEVAccountDetails
     {
-        public string EVStationName { get; set; }
+        public string EVStationName { get; set; } //same as brand -> infrastructure company provider
         public AdressDetails AdressDetails { get; set; }
     }
 
