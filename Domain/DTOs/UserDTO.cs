@@ -22,5 +22,15 @@ namespace Domain.DTOs
         public string PhoneNumber { get; set; }
 
         public string Role { get; set; }
+
+        //Company Registration
+        public string? CompanyName { get; set; }
+        public string? RegistrationNumber { get; set; }
+        public string? TaxNumber { get; set; }
+        public string? Country { get; set; }
+        public string? State { get; set; }
+        public string? City { get; set; }
+        public string? StreetName { get; set; }
+        public string ZipCode { get; set; }
     }
 }

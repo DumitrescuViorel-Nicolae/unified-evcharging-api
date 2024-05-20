@@ -27,21 +27,20 @@ namespace WebAPI.Controllers
             return result;
         }
 
-        [HttpPost("addEVStation")]
-        
+        [HttpPost("addEVStation")] 
         public async Task<GeneralResponse<string>> AddEVStation(EVStationDTO evStation)
         {
             var response = await _evStationService.AddEVStation(evStation);
             return response;
         }
 
-        [HttpPatch("linkEVStation")]
-        [Authorize(Roles = "Company")]
-        public async Task<GeneralResponse<string>> LinkEVStationToStripe(int evStationID, string stripeAccountID)
-        {
-            var response = await _evStationService.LinkStripeAccountID(evStationID, stripeAccountID);
-            return response;
-        }
+        //[HttpPatch("linkEVStation")]
+        //[Authorize(Roles = "Company")]
+        //public async Task<GeneralResponse<string>> LinkEVStationToStripe(int evStationID, string stripeAccountID)
+        //{
+        //    var response = await _evStationService.LinkStripeAccountID(evStationID, stripeAccountID);
+        //    return response;
+        //}
 
         [HttpDelete("deleteEVStation")]
         public async Task<GeneralResponse<string>> DeleteEVStation(int evStationID)
@@ -61,6 +60,12 @@ namespace WebAPI.Controllers
         public async Task<PaymentMethod> GetEVPaymentMethods(int evStationID)
         {
             return await _evStationService.GetPaymentMethods(evStationID);
+        }
+
+        [HttpGet("getCompanies")]
+        public async Task<RegisteredCompany> GetCompany(int id)
+        {
+            return await _evStationService.GetRegisteredCompany(id);
         }
     }
 }

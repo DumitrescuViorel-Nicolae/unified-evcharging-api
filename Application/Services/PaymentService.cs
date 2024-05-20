@@ -12,10 +12,12 @@ namespace Application.Services
 {
     public class PaymentService : IPaymentService
     {
+        // STRIPE Config
         private readonly string StripeAPIKey;
         private readonly Stripe.AccountService _stripeAccountService;
         private readonly PersonService _stripePersonService;
         private readonly PaymentIntentService _paymentIntentService;
+
         private readonly IPaymentTransactionRepository _paymentRepository;
         private readonly IMapper _mapper;
 
@@ -104,7 +106,7 @@ namespace Application.Services
             // Stripe account verification steps
             // Uses testdata from stripe
             string personID = await AddPersonToBusiness(connectedAccountID);
-            await UpdatePersonDetails(connectedAccountID, personID);
+            await UpdatePersonDetails(connectedAccountID, personID, stripeEVAccountDetails);
             await AddBusinessOwnerForVerification(connectedAccountID);
 
             return await GetStripeEVAccount(connectedAccountID);
@@ -128,9 +130,11 @@ namespace Application.Services
         {
             var ownerOptions = new PersonCreateOptions
             {
+                //can be replaced once in prod
+                //hardcoded for now
                 FirstName = "Kathleen",
                 LastName = "Banks",
-                Email = "kathleen@bestcookieco.com",
+                Email = "kathleen.banks@example.com",
                 Relationship = new PersonRelationshipOptions { Owner = true, PercentOwnership = 80M },
                 Address = new AddressOptions
                 {
@@ -154,7 +158,7 @@ namespace Application.Services
             await _stripePersonService.CreateAsync(connectedAccountID, ownerOptions);
         }
 
-        private async Task UpdatePersonDetails(string connectedAccountID, string personID)
+        private async Task UpdatePersonDetails(string connectedAccountID, string personID, StripeEVAccountDetails accountDetails)
         {
             var personUpdatesOptions = new PersonUpdateOptions
             {
@@ -167,8 +171,8 @@ namespace Application.Services
                 },
                 Dob = new DobOptions { Day = 10, Month = 11, Year = 1980 },
                 SsnLast4 = "0000",
-                Phone = "8888675309",
-                Email = "jenny@bestcookieco.com",
+                Phone = accountDetails.UserAccount.PhoneNumber,
+                Email = accountDetails.UserAccount.Email,
                 Relationship = new PersonRelationshipOptions { Executive = true },
             };
 
@@ -232,11 +236,11 @@ namespace Application.Services
                     {
                         City = adressDetails.City,
                         Line1 = adressDetails.Line1,
-                        PostalCode = adressDetails.PostalCode,
+                        PostalCode = "98501",
                         State = adressDetails.State,
                     },
                     TaxId = "000000000", //test data
-                    Name = eVAccountDetails.EVStationName,
+                    Name = eVAccountDetails.CompanyName,
                     Phone = "8888675309", //test data
                 },
             };

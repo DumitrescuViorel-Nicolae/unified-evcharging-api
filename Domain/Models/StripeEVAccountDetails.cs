@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,9 @@ namespace Domain.Models
 {
     public class StripeEVAccountDetails
     {
-        public string EVStationName { get; set; } //same as brand -> infrastructure company provider
+        public string CompanyName { get; set; } //same as brand -> infrastructure company provider
         public AdressDetails AdressDetails { get; set; }
+        public UserDTO UserAccount { get; set; }
     }
 
     public class AdressDetails

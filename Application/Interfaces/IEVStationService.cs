@@ -13,9 +13,9 @@ namespace Application.Interfaces
     {
         Task<List<EVStationDTO>> GetEVStations();
         Task<GeneralResponse<string>> AddEVStation(EVStationDTO newEVStation);
-        Task<GeneralResponse<string>> LinkStripeAccountID(int evStationId, string stripeAccountID);
         Task<ConnectorDetail> GetConnectorDetails(int evStationID);
         Task<PaymentMethod> GetPaymentMethods(int evStationID);
+        Task<RegisteredCompany> GetRegisteredCompany(int id);
         Task<GeneralResponse<string>> DeleteEVStationById(int id);
     }
 }

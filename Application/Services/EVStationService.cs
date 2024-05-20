@@ -5,6 +5,7 @@ using Domain.Entities;
 using Domain.Interfaces.ConnectorRepository;
 using Domain.Interfaces.EVStationRepository;
 using Domain.Interfaces.PaymentRepository;
+using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
 
 namespace Application.Services
@@ -15,18 +16,20 @@ namespace Application.Services
         private readonly IConnectorDetailsRepository _connectorDetails;
         private readonly IConnectorStatusRepository _connectorStatusRepository;
         private readonly IPaymentMethodsRepository _paymentMethods;
+        private readonly ICompaniesRepository _companies;
         private readonly IMapper _mapper;
 
 
         public EVStationService(IEVStationRepository evStations, IConnectorDetailsRepository connectorDetails,
             IPaymentMethodsRepository paymentMethods,
-            IConnectorStatusRepository connectorStatusRepository, IPaymentService paymentService, IMapper mapper)
+            IConnectorStatusRepository connectorStatusRepository, IPaymentService paymentService, IMapper mapper, ICompaniesRepository companies)
         {
             _evStations = evStations;
             _connectorDetails = connectorDetails;
             _paymentMethods = paymentMethods;
             _connectorStatusRepository = connectorStatusRepository;
             _mapper = mapper;
+            _companies = companies;
         }
 
         public async Task<ConnectorDetail> GetConnectorDetails(int evStationID)
@@ -142,18 +145,7 @@ namespace Application.Services
                 return new GeneralResponse<string>(false, $"Error in creating a new EV Station - {ex.Message}");
             }
         }
-        public async Task<GeneralResponse<string>> LinkStripeAccountID(int evStationId, string stripeAccountID)
-        {
-            try
-            {
-                await _evStations.LinkStripeAccountID(evStationId, stripeAccountID);
-                return new GeneralResponse<string>(true, "The selected EV station has been linked");
-            }
-            catch (Exception e)
-            {
-                return new GeneralResponse<string>(false, $"Link not successfull - {e.Message}");
-            }
-        }
+
         public async Task<GeneralResponse<string>> DeleteEVStationById(int id)
         {
             try
@@ -178,5 +170,9 @@ namespace Application.Services
             }
         }
 
+        public async Task<RegisteredCompany> GetRegisteredCompany(int id)
+        {
+            return await _companies.GetByIdAsync(id);
+        }
     }
 }

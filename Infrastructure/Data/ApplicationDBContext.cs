@@ -8,6 +8,8 @@ namespace Infrastructure.Data
     {
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) { }
         public DbSet<EVStation> EVstations { get; set; }
+        public DbSet<RegisteredCompany> RegisteredCompanies { get; set; }
+
         public DbSet<PaymentMethod> PaymentMethod { get; set; }
         public DbSet<ConnectorDetail> ConnectorDetail { get; set; }
         public DbSet<ConnectorStatus> ConnectorStatus { get; set; }
@@ -72,6 +74,10 @@ namespace Infrastructure.Data
                 entity.HasOne(e => e.PaymentMethod).WithOne(e => e.EVStation);
                 entity.HasMany(e => e.ConnectorDetail).WithOne(e => e.EVStation);
 
+                entity.HasOne(e => e.Company)
+                      .WithMany(c => c.EVStations)
+                      .HasForeignKey(e => e.CompanyId);
+
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Brand)
@@ -107,6 +113,47 @@ namespace Infrastructure.Data
                 entity.Property(e => e.Website)
                     .HasMaxLength(255)
                     .HasColumnName("website");
+            });
+
+            modelBuilder.Entity<RegisteredCompany>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.UserId)
+                      .HasColumnName("UserId")
+                      .IsRequired();
+
+                entity.Property(e => e.CompanyName)
+                      .HasMaxLength(255)
+                      .HasColumnName("CompanyName");
+
+                entity.Property(e => e.StripeAccountID)
+                      .HasMaxLength(255)
+                      .HasColumnName("StripeAccountID");
+
+                entity.Property(e => e.RegistrationNumber)
+                      .HasMaxLength(255)
+                      .HasColumnName("RegistrationNumber");
+
+                entity.Property(e => e.TaxNumber)
+                      .HasMaxLength(255)
+                      .HasColumnName("TaxNumber");
+
+                entity.Property(e => e.Country)
+                      .HasMaxLength(255)
+                      .HasColumnName("Country");
+
+                entity.Property(e => e.City)
+                      .HasMaxLength(255)
+                      .HasColumnName("City");
+
+                entity.Property(e => e.StreetName)
+                      .HasMaxLength(255)
+                      .HasColumnName("StreetName");
+
+                entity.Property(e => e.ZipCode)
+                      .HasMaxLength(10)
+                      .HasColumnName("ZipCode");
             });
 
             modelBuilder.Entity<PaymentMethod>(entity =>

@@ -4,8 +4,10 @@ using Domain.Interfaces.ConnectorRepository;
 using Domain.Interfaces.EVStationRepository;
 using Domain.Interfaces.PaymentRepository;
 using Domain.Interfaces.PaymentTransactionRepository;
+using Domain.Interfaces.RegisteredCompaniesRepository;
 using Infrastructure.Data;
 using Infrastructure.Mappings;
+using Infrastructure.Repositories.CompaniesRepository;
 using Infrastructure.Repositories.ConnectorRepository;
 using Infrastructure.Repositories.EVStationRepository;
 using Infrastructure.Repositories.PaymentRepository;
@@ -104,6 +106,7 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 // Repositories
 builder.Services.AddScoped<IEVStationRepository, EVStationRepository>();
+builder.Services.AddScoped<ICompaniesRepository, CompaniesRepository>();
 builder.Services.AddScoped<IConnectorDetailsRepository, ConnectorDetailsRepository>();
 builder.Services.AddScoped<IConnectorStatusRepository, ConnectorStatusRepository>();
 builder.Services.AddScoped<IPaymentMethodsRepository, PaymentMethodsRepository>();

@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.DTOs;
+using Domain.Entities;
+using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
@@ -14,19 +16,21 @@ namespace Application.Services
     public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> userManager;
-        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
+        private readonly ICompaniesRepository _companies;
+        private readonly IPaymentService _paymentService;
 
-        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthService(UserManager<ApplicationUser> userManager, IConfiguration configuration, ICompaniesRepository companies, IPaymentService paymentService)
         {
             this.userManager = userManager;
-            this.roleManager = roleManager;
             _configuration = configuration;
+            _companies = companies;
+            _paymentService = paymentService;
         }
 
         public async Task<GeneralResponse<string>> CreateAccount(UserDTO user)
         {
-            if (user == null) return new GeneralResponse<string>(false, "Model is empty");
+            if (user == null) return new GeneralResponse<string>(false, "User is empty");
             var newUser = new ApplicationUser()
             {
                 Name = user.Username,
@@ -45,14 +49,57 @@ namespace Application.Services
             {
                 if (user.Role == UserRoles.User || user.Role == UserRoles.Company || user.Role == UserRoles.Admin)
                 {
-                    var checkForUserRole = await roleManager.FindByNameAsync(user.Role);
-
-                    //this can be deleted after all flows are created
-                    if (checkForUserRole is null)
-                    {
-                        await roleManager.CreateAsync(new IdentityRole { Name = user.Role});
-                    }
                     await userManager.AddToRoleAsync(newUser, user.Role);
+
+                    if (user.Role == UserRoles.Company)
+                    {
+                        // handle company add
+                        // handle create stripe account as well
+                        var createdUser = await userManager.FindByEmailAsync(newUser.Email);
+                        var company = new RegisteredCompany
+                        {
+                            UserId = createdUser.Id,
+                            CompanyName = user.CompanyName,
+                            Country = user.Country,
+                            City = user.City,
+                            StreetName = user.StreetName,
+                            RegistrationNumber = user.RegistrationNumber,
+                            TaxNumber = user.TaxNumber,
+                            ZipCode = user.ZipCode
+                        };
+                        var registeredCompany = await _companies.AddAsync(company);
+
+                        if (registeredCompany is null) { return new GeneralResponse<string>(false, "Company registration failed!"); }
+
+                        var stripeConnectAccountProperties = new StripeEVAccountDetails
+                        {
+                            UserAccount = user,
+                            AdressDetails = new AdressDetails
+                            {
+                                City = company.City,
+                                State = company.Country,
+                                PostalCode = company.ZipCode,
+                            },
+                            CompanyName = company.CompanyName
+                        };
+
+                        var stripeAccount = await _paymentService.CreateEVConnectAccount(stripeConnectAccountProperties);
+
+                        if (stripeAccount.Id is null)
+                        {
+                            return new GeneralResponse<string>(false, "Stripe account creation failed!");
+                        }
+
+                        await LinkStripeAccountID(registeredCompany.Id, stripeAccount.Id);
+                    }
+
+
+                    //var checkForUserRole = await roleManager.FindByNameAsync(user.Role);
+                    //this can be deleted after all flows are created
+                    //if (checkForUserRole is null)
+                    //{
+                    //    await roleManager.CreateAsync(new IdentityRole { Name = user.Role});
+                    //}
                 }
             }
             else
@@ -61,6 +108,19 @@ namespace Application.Services
             }
 
             return new GeneralResponse<string>(true, "Account created");
+        }
+
+        private async Task<GeneralResponse<string>> LinkStripeAccountID(int companyId, string stripeAccountID)
+        {
+            try
+            {
+                await _companies.LinkStripeAccountID(companyId, stripeAccountID);
+                return new GeneralResponse<string>(true, "The company has been linked!");
+            }
+            catch (Exception e)
+            {
+                return new GeneralResponse<string>(false, $"Link not successfull - {e.Message}");
+            }
         }
 
         public async Task<GeneralResponse<string>> LoginAccount(LoginDTO login)
