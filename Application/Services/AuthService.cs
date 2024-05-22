@@ -77,7 +77,6 @@ namespace Application.Services
                             AdressDetails = new AdressDetails
                             {
                                 City = company.City,
-                                State = company.Country,
                                 PostalCode = company.ZipCode,
                             },
                             CompanyName = company.CompanyName

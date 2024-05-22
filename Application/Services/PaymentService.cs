@@ -171,7 +171,7 @@ namespace Application.Services
                 },
                 Dob = new DobOptions { Day = 10, Month = 11, Year = 1980 },
                 SsnLast4 = "0000",
-                Phone = accountDetails.UserAccount.PhoneNumber,
+                Phone = accountDetails.UserAccount.PhoneNumber, //needs to be US format to pass verification
                 Email = accountDetails.UserAccount.Email,
                 Relationship = new PersonRelationshipOptions { Executive = true },
             };
@@ -228,23 +228,23 @@ namespace Application.Services
                 BusinessProfile = new AccountBusinessProfileOptions
                 {
                     Mcc = "5045",
-                    Url = "https://bestcookieco.com",
+                    Url = "https://accessible.stripe.com",
                 },
                 Company = new AccountCompanyOptions
                 {
                     Address = new AddressOptions
                     {
-                        City = adressDetails.City,
-                        Line1 = adressDetails.Line1,
-                        PostalCode = "98501",
-                        State = adressDetails.State,
+                        City = "Olympia", //leave hardcoded to pass verification
+                        Line1 = adressDetails.Line1, //default value for passing verification
+                        PostalCode = "98501",// as well
+                        State = "WA", //leave hardcoded to pass verification
                     },
                     TaxId = "000000000", //test data
                     Name = eVAccountDetails.CompanyName,
                     Phone = "8888675309", //test data
                 },
             };
-
+            var ceva = await _stripeAccountService.UpdateAsync(connectedAccountID, updatesOptions);
             await _stripeAccountService.UpdateAsync(connectedAccountID, updatesOptions);
         }
      
