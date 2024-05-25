@@ -15,7 +15,6 @@ namespace Domain.Entities
         public string? Website { get; set; }
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
-        public string? StripeAccountID { get; set; }
         public int CompanyId { get; set; }
         public string CompanyName { get; set; }
 

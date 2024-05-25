@@ -45,14 +45,16 @@ namespace Application.Services
         public async Task<List<EVStationDTO>> GetEVStations()
         {
             var evStations = await _evStations.GetAllAsync(station => station.ConnectorDetail, 
-                                                            station => station.PaymentMethod);
+                                                            station => station.PaymentMethod,
+                                                            station => station.Company);
 
             var connectorStatuses = await _connectorStatusRepository.GetAllAsync();
 
             // to convert into a mapping
             return evStations.Select(station => new EVStationDTO
             {
-                Brand = station.Brand,
+                Brand = station.Brand ?? station.Company.CompanyName, // can be equal to company name
+                StripeAccountID = station.Company.StripeAccountID,
                 TotalNumberOfConnectors = station.ConnectorDetail.Count,
                 Address = new Address
                 {

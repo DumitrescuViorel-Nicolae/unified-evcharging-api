@@ -22,8 +22,7 @@ namespace Infrastructure.Mappings
                 .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Contacts.Phone))
                 .ForMember(dest => dest.Website, opt => opt.MapFrom(src => src.Contacts.Website))
                 .ForMember(dest => dest.Latitude, opt => opt.MapFrom(src => src.Position.Latitude))
-                .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Position.Longitude))
-                .ForMember(dest => dest.StripeAccountID, opt => opt.MapFrom(src => src.StripeAccountID));
+                .ForMember(dest => dest.Longitude, opt => opt.MapFrom(src => src.Position.Longitude));
 
             CreateMap<PaymentMethodDTO, Domain.Entities.PaymentMethod>()
                  .ForMember(dest => dest.EPaymentAccept, opt => opt.MapFrom(src => src.EPayment.Accept))
