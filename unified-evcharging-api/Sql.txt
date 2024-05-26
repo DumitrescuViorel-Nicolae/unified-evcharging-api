@@ -10,7 +10,6 @@ CREATE TABLE EVStations (
     website NVARCHAR(255),
     latitude DECIMAL(9,6),
     longitude DECIMAL(9,6),
-    StripeAccountID VARCHAR(255),
     CompanyName NVARCHAR(255),
     CompanyId INT
 );

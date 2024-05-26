@@ -82,6 +82,12 @@ namespace Application.Services
             }
         }
 
+        public async Task<IEnumerable<PaymentTransaction>> GetTransactions()
+        {
+            var result = await _paymentRepository.GetAllAsync();
+            return result;
+        }
+
         /// <summary>
         /// Get created Stripe Account
         /// </summary>

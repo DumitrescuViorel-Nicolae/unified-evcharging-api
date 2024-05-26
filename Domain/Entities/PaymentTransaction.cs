@@ -12,7 +12,7 @@ namespace Domain.Entities
         public decimal Amount { get; set; }
         public string Currency { get; set; }
         public string PaymentMethodBrand { get; set; }
-        public string PaymentMethodLast4 { get; set; }
+        public string? PaymentMethodLast4 { get; set; }
         public string Status { get; set; }
         public string ReceiptUrl { get; set; }
         public DateTime? CreatedAt { get; set; }

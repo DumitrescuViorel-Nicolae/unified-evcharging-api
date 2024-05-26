@@ -1,4 +1,5 @@
-﻿using Domain.Models;
+﻿using Domain.Entities;
+using Domain.Models;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Application.Interfaces
         Task<GeneralResponse<PaymentIntent>> ProcessPayment(string evStationStripeAccountId,
             decimal amount = 1,
             string paymentMethodId = "pm_card_visa");
+        Task<IEnumerable<PaymentTransaction>> GetTransactions();
         Task<Account> CreateEVConnectAccount(StripeEVAccountDetails stripeEVAccountDetails);
         Task<Account> GetStripeEVAccount(string accountID);
         Task<string> DeleteAccount(string accountID);

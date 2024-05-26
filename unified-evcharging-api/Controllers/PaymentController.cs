@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Domain.Entities;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,6 +23,12 @@ namespace WebAPI.Controllers
         {
             var payment = await _paymentService.ProcessPayment(evStationStripeAccountId);
             return Ok(payment);
+        }
+
+        [HttpGet("transactions")]
+        public async Task<IEnumerable<PaymentTransaction>> GetTransactions()
+        {
+            return await _paymentService.GetTransactions();
         }
 
         [HttpPost("createNewStripeEVAccount")]

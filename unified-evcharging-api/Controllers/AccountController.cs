@@ -26,7 +26,7 @@ namespace WebAPI.Controllers
             return Ok(response);
         }
 
-        [HttpPost("updateAccount")]
+        [HttpPut("updateAccount")]
         public async Task<IActionResult> UpdateAccount(UserDTO user)
         {
             var response = await _accountService.UpdateUser(user);
