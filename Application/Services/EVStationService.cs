@@ -55,7 +55,7 @@ namespace Application.Services
             {
                 Brand = station.Brand ?? station.Company.CompanyName, // can be equal to company name
                 StripeAccountID = station.Company.StripeAccountID,
-                TotalNumberOfConnectors = station.ConnectorDetail.Count,
+                TotalNumberOfConnectors = station.TotalNumberOfConnectors,
                 Address = new Address
                 {
                     Street = station.Street,
@@ -81,6 +81,7 @@ namespace Application.Services
                     MaxPowerLevel = detail.MaxPowerLevel,
                     CustomerChargeLevel = detail.CustomerChargeLevel,
                     CustomerConnectorName = detail.CustomerConnectorName,
+                    Price= detail.Price,
                     ConnectorsStatuses = connectorStatuses.Where(status => status.ConnectorDetailsId == detail.Id).Select(status => new ConnectorStatusDto { 
                         State = status.State,
                         PhysicalReference = status.PhysicalReference

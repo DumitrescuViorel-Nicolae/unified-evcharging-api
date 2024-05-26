@@ -14,6 +14,7 @@ namespace Domain.Entities
         public int MaxPowerLevel { get; set; }
         public string? CustomerChargeLevel { get; set; }
         public string? CustomerConnectorName { get; set; }
+        public decimal Price { get; set; }
         public bool? Pay { get; set; }
         public ICollection<ConnectorStatus> ConnectorStatuses { get; set; }
 

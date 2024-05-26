@@ -36,6 +36,10 @@ namespace Infrastructure.Data
                     .HasMaxLength(10)
                     .HasColumnName("customerChargeLevel");
 
+                entity.Property(e => e.Price)
+                    .HasMaxLength(10)
+                    .HasColumnName("price");
+
                 entity.Property(e => e.CustomerConnectorName)
                     .HasMaxLength(255)
                     .HasColumnName("customerConnectorName");

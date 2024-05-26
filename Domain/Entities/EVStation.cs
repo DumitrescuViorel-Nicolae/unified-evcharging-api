@@ -7,7 +7,7 @@ namespace Domain.Entities
     {
         public int Id { get; set; }
         public string? Brand { get; set; }
-        public int? TotalNumberOfConnectors { get; set; }
+        public int TotalNumberOfConnectors { get; set; }
         public string Street { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
