@@ -83,6 +83,55 @@ CREATE INDEX IX_EVStations_CompanyId ON EVStations(CompanyId);
 
 
 
+-- Insert a user (Assuming AspNetUsers table exists and user creation is managed by ASP.NET Identity)
+DECLARE @userId NVARCHAR(450) = NEWID();
+INSERT INTO AspNetUsers (Id, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash, SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnd, LockoutEnabled, AccessFailedCount, Name)
+VALUES (@userId, 'companyUser', 'COMPANYUSER', 'company@example.com', 'COMPANY@EXAMPLE.COM', 1, 'passwordHash', 'securityStamp', NEWID(), '1234567890', 1, 0, NULL, 1, 0, 'Company User');
+
+-- Insert a company and link it to the user
+DECLARE @companyId INT;
+INSERT INTO RegisteredCompanies (UserId, CompanyName, StripeAccountID, RegistrationNumber, TaxNumber, Country, City, StreetName, ZipCode)
+VALUES (@userId, 'Example Company', 'stripe_account_id', 'REG123456', 'TAX123456', 'USA', 'New York', '5th Avenue', '10001');
+SET @companyId = SCOPE_IDENTITY();
+
+-- Insert EV stations and link them to the newly created company
+-- Insert entry 1
+DECLARE @stationId1 INT;
+INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, CompanyName, CompanyId)
+VALUES ('E.ON', 4, 'Strada Batiștei', 'Bucharest', 'Romania', '+4980012189555', 'https://www.eon.com/en/private-customers/eon-drive.html', 44.4362, 26.0999, 'E.ON', @companyId);
+SET @stationId1 = SCOPE_IDENTITY();
+
+-- Insert connector details for the station
+DECLARE @connectorDetailId1 INT;
+INSERT INTO ConnectorDetail (evStationId, supplierName, connectorType, chargeCapacity, maxPowerLevel, customerChargeLevel, customerConnectorName, pay, price)
+VALUES (@stationId1, 'E.ON', 'IEC 62196-2 type 2 (Mennekes)', '230-230VAC, 3-phase at max 32A', 22, '3', 'AC EV connector (Mennekes - type 2)', 1, 2.00); -- Assuming price is 2.00, modify as needed
+
+SET @connectorDetailId1 = SCOPE_IDENTITY();
+
+-- Insert connector statuses for the connector
+INSERT INTO ConnectorStatus (connectorDetailsId, physicalReference, state)
+VALUES (@connectorDetailId1, '01010', 'AVAILABLE'),
+       (@connectorDetailId1, '01010', 'OCCUPIED'),
+       (@connectorDetailId1, '01015', 'OUT_OF_SERVICE'),
+       (@connectorDetailId1, '01015', 'OUT_OF_SERVICE');
+
+-- Insert payment method for the station
+INSERT INTO PaymentMethod (evStationId, ePaymentAccept, otherPaymentAccept, ePaymentTypes, otherPaymentTypes)
+VALUES (@stationId1, 1, 1, 'online-apple-pay, online-google-pay', 'rfid-reader, app, contactless-card, auth-by-car-plug-and-charge');
+
+
+-- Delete the inserted EV stations, connector details, connector statuses, and payment methods
+DELETE FROM PaymentMethod WHERE evStationId IN (SELECT Id FROM EVStations WHERE CompanyName = 'E.ON');
+DELETE FROM ConnectorStatus WHERE connectorDetailsId IN (SELECT Id FROM ConnectorDetail WHERE evStationId IN (SELECT Id FROM EVStations WHERE CompanyName = 'E.ON'));
+DELETE FROM ConnectorDetail WHERE evStationId IN (SELECT Id FROM EVStations WHERE CompanyName = 'E.ON');
+DELETE FROM EVStations WHERE CompanyName = 'E.ON';
+
+-- Delete the inserted company
+DELETE FROM RegisteredCompanies WHERE CompanyName = 'Example Company';
+
+-- Delete the inserted user
+DELETE FROM AspNetUsers WHERE UserName = 'companyUser';
+
 
 {
   "stripeAccountID": "stripe123",

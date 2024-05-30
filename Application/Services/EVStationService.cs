@@ -53,6 +53,7 @@ namespace Application.Services
             // to convert into a mapping
             return evStations.Select(station => new EVStationDTO
             {
+                StationID = station.Id,
                 Brand = station.Brand ?? station.Company.CompanyName, // can be equal to company name
                 StripeAccountID = station.Company.StripeAccountID,
                 TotalNumberOfConnectors = station.TotalNumberOfConnectors,
