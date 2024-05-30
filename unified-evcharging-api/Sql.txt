@@ -98,7 +98,7 @@ SET @companyId = SCOPE_IDENTITY();
 -- Insert entry 1
 DECLARE @stationId1 INT;
 INSERT INTO EVStations (brand, totalNumberOfConnectors, street, city, country, phone, website, latitude, longitude, CompanyName, CompanyId)
-VALUES ('E.ON', 4, 'Strada Batiștei', 'Bucharest', 'Romania', '+4980012189555', 'https://www.eon.com/en/private-customers/eon-drive.html', 44.4362, 26.0999, 'E.ON', @companyId);
+VALUES ('E.ON', 4, 'Strada Batistei', 'Bucharest', 'Romania', '+4980012189555', 'https://www.eon.com/en/private-customers/eon-drive.html', 44.4362, 26.0999, 'E.ON', @companyId);
 SET @stationId1 = SCOPE_IDENTITY();
 
 -- Insert connector details for the station

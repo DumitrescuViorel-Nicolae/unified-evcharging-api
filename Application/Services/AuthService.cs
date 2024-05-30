@@ -16,13 +16,15 @@ namespace Application.Services
     public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly RoleManager<IdentityRole> roleManager;
         private readonly IConfiguration _configuration;
         private readonly ICompaniesRepository _companies;
         private readonly IPaymentService _paymentService;
 
-        public AuthService(UserManager<ApplicationUser> userManager, IConfiguration configuration, ICompaniesRepository companies, IPaymentService paymentService)
+        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, ICompaniesRepository companies, IPaymentService paymentService)
         {
             this.userManager = userManager;
+            this.roleManager = roleManager;
             _configuration = configuration;
             _companies = companies;
             _paymentService = paymentService;
@@ -49,6 +51,9 @@ namespace Application.Services
             {
                 if (user.Role == UserRoles.User || user.Role == UserRoles.Company || user.Role == UserRoles.Admin)
                 {
+                    var checkForUserRole = await roleManager.FindByNameAsync(user.Role);
+                    if (checkForUserRole is null) await roleManager.CreateAsync(new IdentityRole { Name = user.Role });
+
                     await userManager.AddToRoleAsync(newUser, user.Role);
 
                     if (user.Role == UserRoles.Company)
