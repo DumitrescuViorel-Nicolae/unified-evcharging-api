@@ -7,6 +7,7 @@ using Domain.Interfaces.EVStationRepository;
 using Domain.Interfaces.PaymentRepository;
 using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
+using Infrastructure.Utils;
 
 namespace Application.Services
 {
@@ -42,7 +43,7 @@ namespace Application.Services
             return await _paymentMethods.GetByIdAsync(evStationID);
         }
 
-        public async Task<List<EVStationDTO>> GetEVStations()
+        public async Task<List<EVStationDTO>> GetEVStations(Location location)
         {
             var evStations = await _evStations.GetAllAsync(station => station.ConnectorDetail, 
                                                             station => station.PaymentMethod,
@@ -57,6 +58,8 @@ namespace Application.Services
                 Brand = station.Brand ?? station.Company.CompanyName, // can be equal to company name
                 StripeAccountID = station.Company.StripeAccountID,
                 TotalNumberOfConnectors = station.TotalNumberOfConnectors,
+                Distance = Math.Round(LocationUtils.CalculateDistance(location,
+                    new Location { Latitude = station.Latitude, Longitude=station.Longitude}),2),
                 Address = new Address
                 {
                     Street = station.Street,

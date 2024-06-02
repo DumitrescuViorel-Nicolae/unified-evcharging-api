@@ -21,9 +21,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("getEVInfrastructure")]
-        public async Task<List<EVStationDTO>> GetEVInfra()
+        public async Task<List<EVStationDTO>> GetEVInfra([FromQuery]Location location)
         {
-           var result = await _evStationService.GetEVStations();
+           var result = await _evStationService.GetEVStations(location);
             return result;
         }
 

@@ -14,6 +14,7 @@ namespace Domain.DTOs
         public string? StripeAccountID { get; set; } 
         public string Brand { get; set; }
         public string CompanyName { get; set; }
+        public double Distance { get; set; }
 
         public int TotalNumberOfConnectors { get; set; }
         public Address Address { get; set; }
