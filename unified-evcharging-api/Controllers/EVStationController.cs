@@ -28,7 +28,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("addEVStation")] 
-        public async Task<GeneralResponse<string>> AddEVStation(EVStationDTO evStation)
+        public async Task<GeneralResponse<string>> AddEVStation(AddEVStationDTO evStation)
         {
             var response = await _evStationService.AddEVStation(evStation);
             return response;

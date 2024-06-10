@@ -12,7 +12,7 @@ namespace Application.Interfaces
     public interface IEVStationService
     {
         Task<List<EVStationDTO>> GetEVStations(Location location);
-        Task<GeneralResponse<string>> AddEVStation(EVStationDTO newEVStation);
+        Task<GeneralResponse<string>> AddEVStation(AddEVStationDTO newEVStation);
         Task<ConnectorDetail> GetConnectorDetails(int evStationID);
         Task<PaymentMethod> GetPaymentMethods(int evStationID);
         Task<RegisteredCompany> GetRegisteredCompany(int id);

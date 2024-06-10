@@ -113,11 +113,15 @@ namespace Application.Services
                 }
             }).ToList();      
         }
-        public async Task<GeneralResponse<string>> AddEVStation(EVStationDTO newEVStation)
+        public async Task<GeneralResponse<string>> AddEVStation(AddEVStationDTO newEVStation)
         {
             try
             {
                 var newStation = _mapper.Map<EVStation>(newEVStation);
+                
+                //need to get Company to make the bind
+                //need to initiate the statuses of set connectors
+                //
                 var addedEVStation = await _evStations.AddAsync(newStation);
 
                 if(addedEVStation!= null)
