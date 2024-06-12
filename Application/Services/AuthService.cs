@@ -4,11 +4,13 @@ using Domain.Entities;
 using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
 using Infrastructure.Data;
+using Infrastructure.Data.RefreshTokenRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Application.Services
@@ -20,14 +22,19 @@ namespace Application.Services
         private readonly IConfiguration _configuration;
         private readonly ICompaniesRepository _companies;
         private readonly IPaymentService _paymentService;
+        private readonly IRefrehTokenRepository _refreshTokenRepository;
 
-        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, ICompaniesRepository companies, IPaymentService paymentService)
+
+        public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration, ICompaniesRepository companies,
+            IPaymentService paymentService, IRefrehTokenRepository refreshTokenRepository)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
             _configuration = configuration;
             _companies = companies;
             _paymentService = paymentService;
+            _refreshTokenRepository = refreshTokenRepository;
         }
 
         public async Task<GeneralResponse<string>> CreateAccount(UserDTO user)
@@ -114,6 +121,68 @@ namespace Application.Services
             return new GeneralResponse<string>(true, "Account created");
         }
 
+        public async Task<GeneralResponse<LoginResponse>> LoginAccount(LoginDTO login)
+        {
+            if (login == null)
+                return new GeneralResponse<LoginResponse>(false, "Login container empty");
+
+            var getUser = await userManager.FindByEmailAsync(login.Email);
+            if (getUser is null)
+                return new GeneralResponse<LoginResponse>(false, "User not registered");
+
+            bool checkUserPassword = await userManager.CheckPasswordAsync(getUser, login.Password);
+            if (!checkUserPassword)
+                return new GeneralResponse<LoginResponse>(false, "Invalid email/password");
+
+            var getUserRole = await userManager.GetRolesAsync(getUser);
+            var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
+
+            string token = GenerateToken(userSession);
+            string refreshToken = GenerateRefreshToken();
+
+            await _refreshTokenRepository.SaveRefreshToken(getUser.Id, refreshToken);
+            return new GeneralResponse<LoginResponse>(true, "User logged in", new LoginResponse 
+                    { RefreshToken = refreshToken, AccessToken = token });
+        }
+
+        public async Task<GeneralResponse<LoginResponse>> RefreshToken(string refreshToken)
+        {
+            var tokenEntity = await _refreshTokenRepository.GetRefreshToken(refreshToken);
+            if (tokenEntity == null || tokenEntity.ExpiresAt < DateTime.UtcNow)
+            {
+                return new GeneralResponse<LoginResponse>(false, "Invalid or expired refresh token");
+            }
+
+            var user = await userManager.FindByIdAsync(tokenEntity.UserId);
+            if (user == null)
+            {
+                return new GeneralResponse<LoginResponse>(false, "User not found");
+            }
+
+            var userRoles = await userManager.GetRolesAsync(user);
+            var userSession = new UserSession(user.Id, user.Name, user.Email, userRoles.First());
+            string newAccessToken = GenerateToken(userSession);
+            string newRefreshToken = GenerateRefreshToken();
+
+            await _refreshTokenRepository.DeleteRefreshToken(refreshToken);
+            await _refreshTokenRepository.SaveRefreshToken(user.Id, newRefreshToken);
+
+            return new GeneralResponse<LoginResponse>(true, "Token refreshed", new LoginResponse { AccessToken = newAccessToken, RefreshToken = newRefreshToken });
+        }
+
+        public async Task<GeneralResponse<string>> Logout(string refreshToken)
+        {
+            var result = await _refreshTokenRepository.DeleteRefreshToken(refreshToken);
+            if (result)
+            {
+                return new GeneralResponse<string>(true, "Logged out successfully");
+            }
+            else
+            {
+                return new GeneralResponse<string>(false, "Invalid refresh token");
+            }
+        }
+
         private async Task<GeneralResponse<string>> LinkStripeAccountID(int companyId, string stripeAccountID)
         {
             try
@@ -126,27 +195,6 @@ namespace Application.Services
                 return new GeneralResponse<string>(false, $"Link not successfull - {e.Message}");
             }
         }
-
-        public async Task<GeneralResponse<string>> LoginAccount(LoginDTO login)
-        {
-            if (login == null)
-                return new GeneralResponse<string>(false, "Login container empty");
-
-            var getUser = await userManager.FindByEmailAsync(login.Email);
-            if (getUser is null)
-                return new GeneralResponse<string>(false, "User not registered");
-
-            bool checkUserPassword = await userManager.CheckPasswordAsync(getUser, login.Password);
-            if (!checkUserPassword)
-                return new GeneralResponse<string>(false, "Invalid email/password");
-
-            var getUserRole = await userManager.GetRolesAsync(getUser);
-            var userSession = new UserSession(getUser.Id, getUser.Name, getUser.Email, getUserRole.First());
-
-            string token = GenerateToken(userSession);
-            return new GeneralResponse<string>(true, "User logged in", token!);
-        }
-
         private string GenerateToken(UserSession user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]!));
@@ -170,5 +218,15 @@ namespace Application.Services
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        private string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
     }
 }

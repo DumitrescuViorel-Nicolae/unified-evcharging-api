@@ -36,5 +36,21 @@ namespace WebAPI.Controllers
             var response = await _authService.LoginAccount(login);
             return Ok(response);
         }
+
+        [HttpPost("refresh")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RefreshToken([FromBody] TokenDTO tokenDto)
+        {
+            var response = await _authService.RefreshToken(tokenDto.RefreshToken);
+            return Ok(response);
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] TokenDTO tokenDto)
+        {
+            var response = await _authService.Logout(tokenDto.RefreshToken);
+            return Ok(response);
+        }
+
     }
 }

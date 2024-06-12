@@ -193,3 +193,72 @@ DELETE FROM AspNetUsers WHERE UserName = 'companyUser';
     }
   }
 }
+
+
+{
+  "companyName": "GreenEnergy Inc.",
+  "stripeAccountID": "acct_1Gq2F4Iy1iAb56Cd",
+  "brand": "EcoCharge",
+  "totalNumberOfConnectors": 5,
+    "street": "123 Greenway Ave",
+    "city": "Greenville",
+    "country": "USA",
+  "contacts": {
+    "phone": "123-456-7890",
+    "website": "http://ecocharge.example.com"
+  },
+  "position": {
+    "latitude": 40.7128,
+    "longitude": -74.0060
+  },
+  "connectorDetails": [
+    {
+      "supplierName": "SuperChargers Inc.",
+      "connectorType": "Type2",
+      "chargeCapacity": "22kW",
+      "maxPowerLevel": 2,
+      "price": 0.20,
+      "customerChargeLevel": "Fast",
+      "customerConnectorName": "EcoFast",
+      "connectorsStatuses": [
+        {
+          "physicalReference": "A1",
+          "state": "available"
+        },
+        {
+          "physicalReference": "A2",
+          "state": "available"
+        }
+      ]
+    },
+    {
+      "supplierName": "QuickCharge Co.",
+      "connectorType": "Type1",
+      "chargeCapacity": "11kW",
+      "maxPowerLevel": 1,
+      "price": 0.15,
+      "customerChargeLevel": "Medium",
+      "customerConnectorName": "EcoMedium",
+      "connectorsStatuses": [
+        {
+          "physicalReference": "B1",
+          "state": "available"
+        }
+      ]
+    }
+  ],
+  "paymentMethods": {
+    "ePayment": {
+      "accept": true,
+      "types": {
+        "type": ["Credit Card", "Debit Card", "PayPal"]
+      }
+    },
+    "other": {
+      "accept": true,
+      "types": {
+        "type": ["Cash"]
+      }
+    }
+  }
+}

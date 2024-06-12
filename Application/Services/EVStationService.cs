@@ -7,6 +7,7 @@ using Domain.Interfaces.EVStationRepository;
 using Domain.Interfaces.PaymentRepository;
 using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
+using Infrastructure.Repositories.CompaniesRepository;
 using Infrastructure.Utils;
 
 namespace Application.Services
@@ -117,16 +118,15 @@ namespace Application.Services
         {
             try
             {
-                var newStation = _mapper.Map<EVStation>(newEVStation);
-                
-                //need to get Company to make the bind
-                //need to initiate the statuses of set connectors
-                //
-                var addedEVStation = await _evStations.AddAsync(newStation);
+                var company = await _companies.GetByNameAsync(newEVStation.CompanyName);
+                var evStation = _mapper.Map<EVStation>(newEVStation);
+                evStation.CompanyId = company.Id;
 
-                if(addedEVStation!= null)
+                var addedEVStation = await _evStations.AddAsync(evStation);
+
+                if (addedEVStation!= null)
                 {
-                    var evStationID = addedEVStation.Id;
+                    var evStationID = addedEVStation.Id;    
                     var paymentMethods = _mapper.Map<PaymentMethod>(newEVStation.PaymentMethods);
 
                     var insertedPaymentMethod = await _paymentMethods.AddAsync(paymentMethods);

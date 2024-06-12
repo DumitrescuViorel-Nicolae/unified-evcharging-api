@@ -6,6 +6,8 @@ namespace Application.Interfaces
     public interface IAuthService
     {
         Task<GeneralResponse<string>> CreateAccount(UserDTO user);
-        Task<GeneralResponse<string>> LoginAccount(LoginDTO login);
+        Task<GeneralResponse<LoginResponse>> LoginAccount(LoginDTO login);
+        Task<GeneralResponse<LoginResponse>> RefreshToken(string refreshToken);
+        Task<GeneralResponse<string>> Logout(string refreshToken);
     }
 }

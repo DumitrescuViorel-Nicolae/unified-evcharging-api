@@ -9,14 +9,23 @@ namespace Infrastructure.Data
         public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options) : base(options) { }
         public DbSet<EVStation> EVstations { get; set; }
         public DbSet<RegisteredCompany> RegisteredCompanies { get; set; }
-
         public DbSet<PaymentMethod> PaymentMethod { get; set; }
         public DbSet<ConnectorDetail> ConnectorDetail { get; set; }
         public DbSet<ConnectorStatus> ConnectorStatus { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
          
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasOne(rt => rt.User)
+                       .WithMany(u => u.RefreshTokens)
+                       .HasForeignKey(rt => rt.UserId)
+                       .OnDelete(DeleteBehavior.Cascade);
+            });
 
             modelBuilder.Entity<ConnectorDetail>(entity =>
             {
@@ -54,8 +63,8 @@ namespace Infrastructure.Data
                     .HasMaxLength(255)
                     .HasColumnName("supplierName");
             });
-
-            modelBuilder.Entity<ConnectorStatus>(entity =>
+          
+        modelBuilder.Entity<ConnectorStatus>(entity =>
             {
                 entity.ToTable("ConnectorStatus");
 

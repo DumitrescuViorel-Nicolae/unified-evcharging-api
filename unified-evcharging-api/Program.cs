@@ -6,16 +6,20 @@ using Domain.Interfaces.PaymentRepository;
 using Domain.Interfaces.PaymentTransactionRepository;
 using Domain.Interfaces.RegisteredCompaniesRepository;
 using Infrastructure.Data;
+using Infrastructure.Data.RefreshTokenRepository;
 using Infrastructure.Mappings;
 using Infrastructure.Repositories.CompaniesRepository;
 using Infrastructure.Repositories.ConnectorRepository;
 using Infrastructure.Repositories.EVStationRepository;
 using Infrastructure.Repositories.PaymentRepository;
+using Infrastructure.Repositories.RefreshTokenRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,7 +68,11 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(Program), typeof(MappingProfile));
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -111,6 +119,7 @@ builder.Services.AddScoped<IConnectorDetailsRepository, ConnectorDetailsReposito
 builder.Services.AddScoped<IConnectorStatusRepository, ConnectorStatusRepository>();
 builder.Services.AddScoped<IPaymentMethodsRepository, PaymentMethodsRepository>();
 builder.Services.AddScoped<IPaymentTransactionRepository, PaymentTransactions>();
+builder.Services.AddScoped<IRefrehTokenRepository, RefreshTokenRepository>();
 #endregion
 
 #region MiddlewarePipe
