@@ -8,6 +8,7 @@ namespace Domain.DTOs
 {
     public class ConnectorDetailDto
     {
+        public int ID { get; set; }
         public string SupplierName { get; set; }
         public string ConnectorType { get; set; }
         public string ChargeCapacity { get; set; }

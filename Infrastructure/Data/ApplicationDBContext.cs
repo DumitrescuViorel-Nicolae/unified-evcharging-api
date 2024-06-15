@@ -120,9 +120,9 @@ namespace Infrastructure.Data
                     .HasColumnType("decimal(9, 6)")
                     .HasColumnName("longitude");
 
-                entity.Property(e => e.Phone)
+                entity.Property(e => e.AdminPhone)
                     .HasMaxLength(20)
-                    .HasColumnName("phone");
+                    .HasColumnName("AdminPhone");
 
                 entity.Property(e => e.Street)
                     .HasMaxLength(255)
@@ -133,6 +133,11 @@ namespace Infrastructure.Data
                 entity.Property(e => e.Website)
                     .HasMaxLength(255)
                     .HasColumnName("website");
+                
+                entity.Property(e => e.ImageURL)
+                    .HasMaxLength(255)
+                    .HasColumnName("ImageURL");
+
             });
 
             modelBuilder.Entity<RegisteredCompany>(entity =>
@@ -176,6 +181,15 @@ namespace Infrastructure.Data
                 entity.Property(e => e.ZipCode)
                       .HasMaxLength(10)
                       .HasColumnName("ZipCode");
+                
+                entity.Property(e => e.Phone)
+                      .HasMaxLength(10)
+                      .HasColumnName("Phone"); 
+                
+                entity.Property(e => e.Website)
+                      .HasMaxLength(10)
+                      .HasColumnName("Website");
+
             });
 
             modelBuilder.Entity<PaymentMethod>(entity =>

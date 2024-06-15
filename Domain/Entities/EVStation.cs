@@ -11,12 +11,13 @@ namespace Domain.Entities
         public string Street { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-        public string? Phone { get; set; }
+        public string? AdminPhone { get; set; }
         public string? Website { get; set; }
         public decimal Latitude { get; set; }
         public decimal Longitude { get; set; }
         public int CompanyId { get; set; }
         public string CompanyName { get; set; }
+        public string? ImageURL { get; set; }
 
 
         public ICollection<ConnectorDetail>? ConnectorDetail { get; set; }

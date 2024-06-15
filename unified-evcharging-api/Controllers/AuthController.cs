@@ -23,7 +23,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterUser(UserDTO user)
+        public async Task<IActionResult> RegisterUser(RegisterDTO user)
         {
             var response = await _authService.CreateAccount(user);
             return Ok(response);

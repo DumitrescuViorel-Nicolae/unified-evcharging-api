@@ -37,33 +37,33 @@ namespace Application.Services
             _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public async Task<GeneralResponse<string>> CreateAccount(UserDTO user)
+        public async Task<GeneralResponse<string>> CreateAccount(RegisterDTO user)
         {
             if (user == null) return new GeneralResponse<string>(false, "User is empty");
             var newUser = new ApplicationUser()
             {
-                Name = user.Username,
-                Email = user.Email,
-                PasswordHash = user.Password,
-                UserName = user.Email
+                Name = user.UserDetails.Username,
+                Email = user.UserDetails.Email,
+                PasswordHash = user.UserDetails.Password,
+                UserName = user.UserDetails.Username
             };
 
             var existingUser = await userManager.FindByEmailAsync(newUser.Email);
             if (existingUser is not null) return new GeneralResponse<string>(false, "User already registered");
 
-            var createUser = await userManager.CreateAsync(newUser!, user.Password);
+            var createUser = await userManager.CreateAsync(newUser!, user.UserDetails.Password);
             if (!createUser.Succeeded) return new GeneralResponse<string>(false, $"Error occured in user creation, please try again - {createUser.Errors.FirstOrDefault()?.Description}");
 
-            if (user.Role is not null)
+            if (user.UserDetails.Role is not null)
             {
-                if (user.Role == UserRoles.User || user.Role == UserRoles.Company || user.Role == UserRoles.Admin)
+                if (user.UserDetails.Role == UserRoles.User || user.UserDetails.Role == UserRoles.Company || user.UserDetails.Role == UserRoles.Admin)
                 {
-                    var checkForUserRole = await roleManager.FindByNameAsync(user.Role);
-                    if (checkForUserRole is null) await roleManager.CreateAsync(new IdentityRole { Name = user.Role });
+                    var checkForUserRole = await roleManager.FindByNameAsync(user.UserDetails.Role);
+                    if (checkForUserRole is null) await roleManager.CreateAsync(new IdentityRole { Name = user.UserDetails.Role });
 
-                    await userManager.AddToRoleAsync(newUser, user.Role);
+                    await userManager.AddToRoleAsync(newUser, user.UserDetails.Role);
 
-                    if (user.Role == UserRoles.Company)
+                    if (user.UserDetails.Role == UserRoles.Company)
                     {
                         // handle company add
                         // handle create stripe account as well
@@ -71,13 +71,13 @@ namespace Application.Services
                         var company = new RegisteredCompany
                         {
                             UserId = createdUser.Id,
-                            CompanyName = user.CompanyName,
-                            Country = user.Country,
-                            City = user.City,
-                            StreetName = user.StreetName,
-                            RegistrationNumber = user.RegistrationNumber,
-                            TaxNumber = user.TaxNumber,
-                            ZipCode = user.ZipCode
+                            CompanyName = user.CompanyDetails.CompanyName,
+                            Country = user.CompanyDetails.Country,
+                            City = user.CompanyDetails.City,
+                            StreetName = user.CompanyDetails.StreetName,
+                            RegistrationNumber = user.CompanyDetails.RegistrationNumber,
+                            TaxNumber = user.CompanyDetails.TaxNumber,
+                            ZipCode = user.CompanyDetails.ZipCode
                         };
                         var registeredCompany = await _companies.AddAsync(company);
 
@@ -85,7 +85,7 @@ namespace Application.Services
 
                         var stripeConnectAccountProperties = new StripeEVAccountDetails
                         {
-                            UserAccount = user,
+                            UserAccount = user.UserDetails,
                             AdressDetails = new AdressDetails
                             {
                                 City = company.City,

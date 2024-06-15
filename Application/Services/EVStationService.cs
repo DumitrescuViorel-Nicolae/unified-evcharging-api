@@ -55,67 +55,31 @@ namespace Application.Services
 
             var connectorStatuses = await _connectorStatusRepository.GetAllAsync();
 
-            // to convert into a mapping
-            return evStations.Select(station => new EVStationDTO
+            var evStationDTOs = evStations.Select(station =>
             {
-                StationID = station.Id,
-                Brand = station.Brand ?? station.Company.CompanyName, // can be equal to company name
-                StripeAccountID = station.Company.StripeAccountID,
-                TotalNumberOfConnectors = station.TotalNumberOfConnectors,
-                Distance = Math.Round(LocationUtils.CalculateDistance(location,
-                    new Location { Latitude = station.Latitude, Longitude=station.Longitude}),2),
-                Address = new Address
-                {
-                    Street = station.Street,
-                    City = station.City,
-                    Country = station.Country
-                },
-                Contacts = new Contacts
-                {
-                    Phone = station.Phone,
-                    Website = station.Website
-                },
-                Position = new Position
+                var dto = _mapper.Map<EVStationDTO>(station);
+                dto.Distance = Math.Round(LocationUtils.CalculateDistance(location, new Location
                 {
                     Latitude = station.Latitude,
                     Longitude = station.Longitude
-                },
+                }), 2);
 
-                ConnectorDetails = station.ConnectorDetail.Select(detail => new ConnectorDetailDto
+                // Map connector statuses for each ConnectorDetailDto
+                foreach (var connectorDetail in dto.ConnectorDetails)
                 {
-                    SupplierName = detail.SupplierName,
-                    ConnectorType = detail.ConnectorType,
-                    ChargeCapacity = detail.ChargeCapacity,
-                    MaxPowerLevel = detail.MaxPowerLevel,
-                    CustomerChargeLevel = detail.CustomerChargeLevel,
-                    CustomerConnectorName = detail.CustomerConnectorName,
-                    Price= detail.Price,
-                    ConnectorsStatuses = connectorStatuses.Where(status => status.ConnectorDetailsId == detail.Id).Select(status => new ConnectorStatusDto { 
-                        State = status.State,
-                        PhysicalReference = status.PhysicalReference
-                    }).ToList(),
-                }).ToList(),
-
-                PaymentMethods = new PaymentMethodDTO
-                {
-                    EPayment = new PaymentType
-                    {
-                        Accept = station.PaymentMethod.EPaymentAccept,
-                        Types = new PaymentTypes
+                    connectorDetail.ConnectorsStatuses = connectorStatuses
+                        .Where(status => status.ConnectorDetailsId == connectorDetail.ID)
+                        .Select(status => new ConnectorStatusDto
                         {
-                            Type = station.PaymentMethod.EPaymentTypes.Split(',').ToList(),
-                        }
-                    },
-                    Other = new PaymentType
-                    {
-                        Accept = station.PaymentMethod.OtherPaymentAccept.GetValueOrDefault(),
-                        Types = new PaymentTypes
-                        {
-                            Type = station.PaymentMethod.OtherPaymentTypes?.Split(',').ToList() ?? new List<string>()
-                        }
-                    }
+                            State = status.State,
+                            PhysicalReference = status.PhysicalReference
+                        }).ToList();
                 }
-            }).ToList();      
+
+                return dto;
+            }).ToList();
+
+            return evStationDTOs;
         }
         public async Task<GeneralResponse<string>> AddEVStation(AddEVStationDTO newEVStation)
         {
@@ -124,6 +88,7 @@ namespace Application.Services
                 var company = await _companies.GetByNameAsync(newEVStation.CompanyName);
                 var evStation = _mapper.Map<EVStation>(newEVStation);
                 evStation.CompanyId = company.Id;
+                evStation.Website= company.Website;
 
                 var addedEVStation = await _evStations.AddAsync(evStation);
 

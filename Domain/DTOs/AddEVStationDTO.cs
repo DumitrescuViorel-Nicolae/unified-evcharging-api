@@ -13,9 +13,8 @@ namespace Domain.DTOs
         public string Street { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
-        public string? Phone { get; set; }
-        public string? Website { get; set; }
         public string CompanyName { get; set; }
+        public string? Phone { get; set; }
 
         public List<ConnectorDetailDto> ConnectorDetails { get; set; }
         public PaymentMethodDTO PaymentMethods { get; set; }

@@ -8,18 +8,18 @@ namespace Domain.DTOs
 {
     public class PaymentMethodDTO
     {
-        public PaymentType EPayment { get; set; }
-        public PaymentType Other { get; set; }
+        public PaymentType? EPayment { get; set; }
+        public PaymentType? Other { get; set; }
     }
 
     public class PaymentType
     {
         public bool Accept { get; set; }
-        public PaymentTypes Types { get; set; }
+        public PaymentTypes? Types { get; set; }
     }
 
     public class PaymentTypes
     {
-        public List<string> Type { get; set; }
+        public List<string>? Type { get; set; }
     }
 }

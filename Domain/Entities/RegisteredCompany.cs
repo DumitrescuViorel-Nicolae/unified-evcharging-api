@@ -8,6 +8,8 @@ namespace Domain.Entities
         public int Id { get; set; }
         public string UserId { get; set; }
         public string CompanyName { get; set; }
+        public string? Phone { get; set; }
+        public string? Website { get; set; }
         public string StripeAccountID { get; set; }
         public string RegistrationNumber { get; set; }
         public string TaxNumber { get; set; }
