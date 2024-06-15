@@ -49,11 +49,18 @@ namespace WebAPI.Controllers
             return response;
         }
 
-        [HttpGet("getEVConnectorDetails")]
+       /* [HttpGet("getEVConnectorDetails")]
         public async Task<ConnectorDetail> GetEVConnectorDetails(int evStationID)
         {
             var connectorDetails = await _evStationService.GetConnectorDetails(evStationID);
-            return connectorDetails;
+           return connectorDetails;
+        } */
+
+        [HttpGet("getEVConnectorType")]
+        public async Task<List<ConnectorType>> GetEVConnectorType()
+        {
+            var connectorType = await _evStationService.GetConnectorType();
+            return connectorType;
         }
 
         [HttpGet("getEVPaymentMethods")]

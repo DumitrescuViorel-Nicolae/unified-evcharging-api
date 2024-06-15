@@ -13,7 +13,8 @@ namespace Application.Interfaces
     {
         Task<List<EVStationDTO>> GetEVStations(Location location);
         Task<GeneralResponse<string>> AddEVStation(AddEVStationDTO newEVStation);
-        Task<ConnectorDetail> GetConnectorDetails(int evStationID);
+        // Task<ConnectorDetail> GetConnectorDetails(int evStationID);
+        Task<List<ConnectorType>> GetConnectorType();
         Task<PaymentMethod> GetPaymentMethods(int evStationID);
         Task<RegisteredCompany> GetRegisteredCompany(int id);
         Task<GeneralResponse<string>> DeleteEVStationById(int id);

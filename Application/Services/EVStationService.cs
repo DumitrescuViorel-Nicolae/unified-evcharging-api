@@ -9,6 +9,7 @@ using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
 using Infrastructure.Repositories.CompaniesRepository;
 using Infrastructure.Utils;
+using System.Xml.Linq;
 
 namespace Application.Services
 {
@@ -34,10 +35,12 @@ namespace Application.Services
             _companies = companies;
         }
 
-        public async Task<ConnectorDetail> GetConnectorDetails(int evStationID)
+        public async Task<List<ConnectorType>> GetConnectorType()
         {
-            return await _connectorDetails.GetByIdAsync(evStationID);
-        }
+            var connectorDetailsFromDB= await _connectorDetails.GetAllAsync();
+            var types = connectorDetailsFromDB.Select(item => new ConnectorType { Id = item.Id, Description = item.ConnectorType });
+            return types.ToList();
+        } 
 
         public async Task<PaymentMethod> GetPaymentMethods(int evStationID)
         {
@@ -134,8 +137,8 @@ namespace Application.Services
 
                    foreach(var connectorDetail in newEVStation.ConnectorDetails)
                     {
-                        var connectorDetails = _mapper.Map<ConnectorDetail>(connectorDetail);
-                        var insertedDetail = await _connectorDetails.AddAsync(connectorDetails);
+                        var createdConnectorDetail = _mapper.Map<ConnectorDetail>(connectorDetail);
+                        var insertedDetail = await _connectorDetails.AddAsync(createdConnectorDetail);
                         insertedDetail.EvStationId = evStationID;
 
                         foreach (var connectorStatus in connectorDetail.ConnectorsStatuses)

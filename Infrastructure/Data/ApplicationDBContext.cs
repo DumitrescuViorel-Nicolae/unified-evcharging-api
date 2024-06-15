@@ -16,7 +16,7 @@ namespace Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-         
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<RefreshToken>(entity =>
@@ -31,7 +31,9 @@ namespace Infrastructure.Data
             {
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.HasMany(e => e.ConnectorStatuses).WithOne(e => e.ConnectorDetails);
+                entity.HasMany(e => e.ConnectorStatuses)
+                .WithOne(e => e.ConnectorDetails)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 entity.Property(e => e.ChargeCapacity)
                     .HasMaxLength(255)
@@ -63,29 +65,34 @@ namespace Infrastructure.Data
                     .HasMaxLength(255)
                     .HasColumnName("supplierName");
             });
-          
-        modelBuilder.Entity<ConnectorStatus>(entity =>
-            {
-                entity.ToTable("ConnectorStatus");
 
-                entity.Property(e => e.Id).HasColumnName("id");
+            modelBuilder.Entity<ConnectorStatus>(entity =>
+                {
+                    entity.ToTable("ConnectorStatus");
 
-                entity.Property(e => e.ConnectorDetailsId).HasColumnName("connectorDetailsId");
+                    entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.PhysicalReference)
-                    .HasMaxLength(10)
-                    .HasColumnName("physicalReference");
+                    entity.Property(e => e.ConnectorDetailsId).HasColumnName("connectorDetailsId");
 
-                entity.Property(e => e.State)
-                    .HasMaxLength(50)
-                    .HasColumnName("state");
-            });
+                    entity.Property(e => e.PhysicalReference)
+                        .HasMaxLength(10)
+                        .HasColumnName("physicalReference");
+
+                    entity.Property(e => e.State)
+                        .HasMaxLength(50)
+                        .HasColumnName("state");
+                });
 
             modelBuilder.Entity<EVStation>(entity =>
             {
                 entity.ToTable("EVStations");
-                entity.HasOne(e => e.PaymentMethod).WithOne(e => e.EVStation);
-                entity.HasMany(e => e.ConnectorDetail).WithOne(e => e.EVStation);
+                entity.HasOne(e => e.PaymentMethod)
+                    .WithOne(e => e.EVStation)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(e => e.ConnectorDetail)  
+                    .WithOne(e => e.EVStation)
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Company)
                       .WithMany(c => c.EVStations)
@@ -131,6 +138,8 @@ namespace Infrastructure.Data
             modelBuilder.Entity<RegisteredCompany>(entity =>
             {
                 entity.Property(e => e.Id).HasColumnName("id");
+                entity.HasMany(e => e.EVStations).WithOne(e => e.Company)
+                .OnDelete(DeleteBehavior.Cascade);
 
                 entity.Property(e => e.UserId)
                       .HasColumnName("UserId")
@@ -189,6 +198,7 @@ namespace Infrastructure.Data
                 entity.ToTable("PaymentTransactions");
 
                 entity.HasKey(e => e.TransactionId).HasName("transaction_id");
+
 
                 entity.Property(e => e.TransactionId)
                     .HasColumnName("transaction_id")
