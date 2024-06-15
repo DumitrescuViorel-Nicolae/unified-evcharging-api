@@ -9,6 +9,7 @@ using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
 using Infrastructure.Repositories.CompaniesRepository;
 using Infrastructure.Utils;
+using Microsoft.Extensions.Configuration;
 using System.Xml.Linq;
 
 namespace Application.Services
@@ -21,26 +22,28 @@ namespace Application.Services
         private readonly IPaymentMethodsRepository _paymentMethods;
         private readonly ICompaniesRepository _companies;
         private readonly IMapper _mapper;
-
+        private readonly string googleApiKey;
 
         public EVStationService(IEVStationRepository evStations, IConnectorDetailsRepository connectorDetails,
-            IPaymentMethodsRepository paymentMethods,
+            IPaymentMethodsRepository paymentMethods, IConfiguration configuration,
             IConnectorStatusRepository connectorStatusRepository, IPaymentService paymentService, IMapper mapper, ICompaniesRepository companies)
         {
             _evStations = evStations;
             _connectorDetails = connectorDetails;
             _paymentMethods = paymentMethods;
             _connectorStatusRepository = connectorStatusRepository;
-            _mapper = mapper;
             _companies = companies;
+            googleApiKey = configuration["Google:ApiKey"];
+            _mapper = mapper;
+
         }
 
         public async Task<List<ConnectorType>> GetConnectorType()
         {
-            var connectorDetailsFromDB= await _connectorDetails.GetAllAsync();
+            var connectorDetailsFromDB = await _connectorDetails.GetAllAsync();
             var types = connectorDetailsFromDB.Select(item => new ConnectorType { Id = item.Id, Description = item.ConnectorType });
             return types.ToList();
-        } 
+        }
 
         public async Task<PaymentMethod> GetPaymentMethods(int evStationID)
         {
@@ -49,7 +52,7 @@ namespace Application.Services
 
         public async Task<List<EVStationDTO>> GetEVStations(Location location)
         {
-            var evStations = await _evStations.GetAllAsync(station => station.ConnectorDetail, 
+            var evStations = await _evStations.GetAllAsync(station => station.ConnectorDetail,
                                                             station => station.PaymentMethod,
                                                             station => station.Company);
 
@@ -88,31 +91,40 @@ namespace Application.Services
                 var company = await _companies.GetByNameAsync(newEVStation.CompanyName);
                 var evStation = _mapper.Map<EVStation>(newEVStation);
                 evStation.CompanyId = company.Id;
-                evStation.Website= company.Website;
+                evStation.Website = company.Website;
+
+                // get coordinates
+                var coords = LocationUtils.GetLocationBasedOnAddress(googleApiKey, newEVStation.City, newEVStation.Country, newEVStation.Street);
+                evStation.Latitude = coords.Latitude;
+                evStation.Longitude = coords.Longitude;
 
                 var addedEVStation = await _evStations.AddAsync(evStation);
 
-                if (addedEVStation!= null)
+                if (addedEVStation != null)
                 {
-                    var evStationID = addedEVStation.Id;    
+                    var evStationID = addedEVStation.Id;
                     var paymentMethods = _mapper.Map<PaymentMethod>(newEVStation.PaymentMethods);
 
                     var insertedPaymentMethod = await _paymentMethods.AddAsync(paymentMethods);
                     insertedPaymentMethod.EvStationId = evStationID;
 
-                   foreach(var connectorDetail in newEVStation.ConnectorDetails)
+                    foreach (var connectorDetail in newEVStation.ConnectorDetails)
                     {
                         var createdConnectorDetail = _mapper.Map<ConnectorDetail>(connectorDetail);
                         var insertedDetail = await _connectorDetails.AddAsync(createdConnectorDetail);
-                        insertedDetail.EvStationId = evStationID;
 
-                        foreach (var connectorStatus in connectorDetail.ConnectorsStatuses)
+                        for (int i = 0; i <= connectorDetail.NumberOfConnectors; i++)
                         {
                             var id = insertedDetail.Id;
-                            var connectorStatusToInsert = _mapper.Map<ConnectorStatus>(connectorStatus);
-                            connectorStatusToInsert.ConnectorDetailsId = id;
-                            await _connectorStatusRepository.AddAsync(connectorStatusToInsert);
+                            var connectorStatus = new ConnectorStatus
+                            {
+                                PhysicalReference = i.ToString(),
+                                State = "Available",
+                                ConnectorDetailsId = insertedDetail.Id
+                            };
+                            await _connectorStatusRepository.AddAsync(connectorStatus);
                         }
+
                     }
 
                 }

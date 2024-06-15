@@ -15,8 +15,9 @@ namespace Domain.DTOs
         public string Country { get; set; }
         public string CompanyName { get; set; }
         public string? Phone { get; set; }
+        public string ImageURL { get; set; }
 
-        public List<ConnectorDetailDto> ConnectorDetails { get; set; }
+        public List<AddConnectorDetailDTO> ConnectorDetails { get; set; }
         public PaymentMethodDTO PaymentMethods { get; set; }
 
     }

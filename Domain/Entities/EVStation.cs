@@ -19,7 +19,6 @@ namespace Domain.Entities
         public string CompanyName { get; set; }
         public string? ImageURL { get; set; }
 
-
         public ICollection<ConnectorDetail>? ConnectorDetail { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
         public RegisteredCompany Company { get; set;  }

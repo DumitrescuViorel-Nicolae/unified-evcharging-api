@@ -5,8 +5,6 @@ using Domain.Interfaces.PaymentTransactionRepository;
 using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Stripe;
-using System;
-using System.Collections.Generic;
 
 namespace Application.Services
 {

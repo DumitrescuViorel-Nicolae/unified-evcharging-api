@@ -1,4 +1,7 @@
 ﻿using Domain.Models;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Newtonsoft.Json.Linq;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,5 +33,31 @@ namespace Infrastructure.Utils
 
             return distance;
         }
+
+        public static Location GetLocationBasedOnAddress(string googleApiKey, string city, string country, string street)
+        {
+            var address = $"{street}, {city}, {country}";
+            string requestUrl = $"https://maps.googleapis.com/maps/api/geocode/json?address={Uri.EscapeDataString(address)}&key={googleApiKey}";
+
+            var client = new RestClient(requestUrl);
+            var request = new RestRequest();
+            var response = client.Execute(request);
+
+            if(response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var jsonResponse = JObject.Parse(response.Content);
+                var location = jsonResponse["results"][0]["geometry"]["location"];
+
+                decimal latitude = Convert.ToDecimal(location["lat"]);
+                decimal longitude = Convert.ToDecimal(location["lng"]);
+
+                return new Location { Latitude = latitude, Longitude = longitude };
+            }
+            else
+            {
+                return new Location();
+            }
+        }
+
     }
 }
