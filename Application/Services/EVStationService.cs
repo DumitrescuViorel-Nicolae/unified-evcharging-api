@@ -49,7 +49,6 @@ namespace Application.Services
         {
             return await _paymentMethods.GetByIdAsync(evStationID);
         }
-
         public async Task<List<EVStationDTO>> GetEVStations(Location location)
         {
             var evStations = await _evStations.GetAllAsync(station => station.ConnectorDetail,
@@ -119,7 +118,7 @@ namespace Application.Services
                             var connectorStatus = new ConnectorStatus
                             {
                                 PhysicalReference = i.ToString(),
-                                State = "Available",
+                                State = "AVAILABLE",
                                 ConnectorDetailsId = insertedDetail.Id
                             };
                             await _connectorStatusRepository.AddAsync(connectorStatus);
@@ -144,8 +143,7 @@ namespace Application.Services
                 var evStationToDelete = await _evStations.GetByIdAsync(id);
                 if (evStationToDelete != null)
                 {
-                    await _paymentMethods.DeleteByIdAsync(id);
-                    await _connectorDetails.DeleteByIdAsync(id);
+                    await _paymentMethods.DeleteByEvStationIDAsync(id);
                     await _evStations.DeleteAsync(evStationToDelete);
 
                     return new GeneralResponse<string>(true, "EV Station deleted successfully!");
@@ -160,10 +158,9 @@ namespace Application.Services
                 return new GeneralResponse<string>(false, $"Error deleting EV Station: {ex.Message}");
             }
         }
-
-        public async Task<RegisteredCompany> GetRegisteredCompany(int id)
+        public async Task<RegisteredCompany> GetCompanyByUserIdAsync(string userID)
         {
-            return await _companies.GetByIdAsync(id);
+            return await _companies.GetByUserIdAsync(userID);
         }
     }
 }

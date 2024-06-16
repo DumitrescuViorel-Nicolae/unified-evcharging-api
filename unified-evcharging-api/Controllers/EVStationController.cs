@@ -69,10 +69,10 @@ namespace WebAPI.Controllers
             return await _evStationService.GetPaymentMethods(evStationID);
         }
 
-        [HttpGet("getCompanies")]
-        public async Task<RegisteredCompany> GetCompany(int id)
+        [HttpGet("getCompanyByUserId")]
+        public async Task<RegisteredCompany> GetCompany(string id)
         {
-            return await _evStationService.GetRegisteredCompany(id);
+            return await _evStationService.GetCompanyByUserIdAsync(id);
         }
     }
 }

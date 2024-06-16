@@ -9,5 +9,6 @@ namespace Domain.Interfaces.PaymentRepository
 {
     public interface IPaymentMethodsRepository : IRepository<PaymentMethod>
     {
+        Task DeleteByEvStationIDAsync(int evStationID);
     }
 }

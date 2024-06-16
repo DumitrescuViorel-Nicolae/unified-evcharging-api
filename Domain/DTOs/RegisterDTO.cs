@@ -11,6 +11,7 @@ namespace Domain.DTOs
     public class RegisterDTO
     {
         public UserDTO UserDetails { get; set; }
+
         [Required(AllowEmptyStrings = true)]
         public CompanyDTO? CompanyDetails { get; set; }
     }

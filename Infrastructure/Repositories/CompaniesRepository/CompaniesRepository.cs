@@ -2,6 +2,7 @@
 using Domain.Interfaces.RegisteredCompaniesRepository;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,15 @@ namespace Infrastructure.Repositories.CompaniesRepository
         public async Task<RegisteredCompany> GetByNameAsync(string companyName)
         {
             var company = await _dbSet.FirstOrDefaultAsync(c => c.CompanyName == companyName);
+            if (company == null)
+                throw new Exception("EVStation not found.");
+
+            return company;
+        }
+
+        public async Task<RegisteredCompany> GetByUserIdAsync(string userID)
+        {
+            var company = await _dbSet.FirstOrDefaultAsync(c => c.UserId == userID);
             if (company == null)
                 throw new Exception("EVStation not found.");
 

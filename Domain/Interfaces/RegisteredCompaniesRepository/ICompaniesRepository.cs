@@ -11,5 +11,6 @@ namespace Domain.Interfaces.RegisteredCompaniesRepository
     {
         Task LinkStripeAccountID(int companyId, string stripeAccountId);
         Task<RegisteredCompany> GetByNameAsync(string companyName);
+        Task<RegisteredCompany> GetByUserIdAsync(string userID);
     }
 }
