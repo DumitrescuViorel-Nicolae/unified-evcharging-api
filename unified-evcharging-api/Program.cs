@@ -6,7 +6,6 @@ using Domain.Interfaces.PaymentRepository;
 using Domain.Interfaces.PaymentTransactionRepository;
 using Domain.Interfaces.RegisteredCompaniesRepository;
 using Infrastructure.Data;
-using Infrastructure.Data.RefreshTokenRepository;
 using Infrastructure.Mappings;
 using Infrastructure.Repositories.CompaniesRepository;
 using Infrastructure.Repositories.ConnectorRepository;

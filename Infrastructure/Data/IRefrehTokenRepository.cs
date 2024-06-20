@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Data.RefreshTokenRepository
+﻿namespace Infrastructure.Data
 {
     public interface IRefrehTokenRepository : IRepository<RefreshToken>
     {

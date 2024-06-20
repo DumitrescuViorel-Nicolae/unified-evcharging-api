@@ -1,7 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces.EVStationRepository;
 using Infrastructure.Data;
-using Infrastructure.Data.RefreshTokenRepository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -4,7 +4,6 @@ using Domain.Entities;
 using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
 using Infrastructure.Data;
-using Infrastructure.Data.RefreshTokenRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -103,14 +102,6 @@ namespace Application.Services
 
                         await LinkStripeAccountID(registeredCompany.Id, stripeAccount.Id);
                     }
-
-
-                    //var checkForUserRole = await roleManager.FindByNameAsync(user.Role);
-                    //this can be deleted after all flows are created
-                    //if (checkForUserRole is null)
-                    //{
-                    //    await roleManager.CreateAsync(new IdentityRole { Name = user.Role});
-                    //}
                 }
             }
             else
