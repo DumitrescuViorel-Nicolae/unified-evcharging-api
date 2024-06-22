@@ -110,6 +110,7 @@ namespace Application.Services
                     foreach (var connectorDetail in newEVStation.ConnectorDetails)
                     {
                         var createdConnectorDetail = _mapper.Map<ConnectorDetail>(connectorDetail);
+                        createdConnectorDetail.EvStationId = evStationID;
                         var insertedDetail = await _connectorDetails.AddAsync(createdConnectorDetail);
 
                         for (int i = 0; i <= connectorDetail.NumberOfConnectors; i++)
@@ -144,6 +145,7 @@ namespace Application.Services
                 if (evStationToDelete != null)
                 {
                     await _paymentMethods.DeleteByEvStationIDAsync(id);
+                    await _connectorDetails.DeleteByEvStationIDAsync(id);
                     await _evStations.DeleteAsync(evStationToDelete);
 
                     return new GeneralResponse<string>(true, "EV Station deleted successfully!");

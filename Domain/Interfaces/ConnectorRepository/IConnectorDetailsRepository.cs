@@ -9,5 +9,6 @@ namespace Domain.Interfaces.ConnectorRepository
 {
     public interface IConnectorDetailsRepository : IRepository<ConnectorDetail>
     {
+        Task DeleteByEvStationIDAsync(int evStationID);
     }
 }
