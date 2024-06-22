@@ -91,6 +91,7 @@ namespace Application.Services
                 var evStation = _mapper.Map<EVStation>(newEVStation);
                 evStation.CompanyId = company.Id;
                 evStation.Website = company.Website;
+                evStation.TotalNumberOfConnectors = newEVStation.ConnectorDetails.Count();
 
                 // get coordinates
                 var coords = LocationUtils.GetLocationBasedOnAddress(googleApiKey, newEVStation.City, newEVStation.Country, newEVStation.Street);
