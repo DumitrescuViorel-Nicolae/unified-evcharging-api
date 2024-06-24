@@ -11,7 +11,7 @@ COPY WebAPI/*.csproj ./WebAPI/
 # Copy everything else and build the app
 COPY . .
 WORKDIR /app/WebAPI/
-RUN dotnet publish -c Release -o /publish
+RUN dotnet publish WebAPI.csproj -c Release -o /publish
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
