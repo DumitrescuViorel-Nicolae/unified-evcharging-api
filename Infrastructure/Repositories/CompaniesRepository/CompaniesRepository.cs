@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories.CompaniesRepository
         {
             var company = await _dbSet.FirstOrDefaultAsync(c => c.UserId == userID);
             if (company == null)
-                throw new Exception("EVStation not found.");
+                throw new Exception("Company not found.");
 
             return company;
         }

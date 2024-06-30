@@ -12,5 +12,6 @@ namespace Application.Interfaces
         Task<PaymentMethod> GetPaymentMethods(int evStationID);
         Task<RegisteredCompany> GetCompanyByUserIdAsync(string userID);
         Task<GeneralResponse<string>> DeleteEVStationById(int id);
+        Task<List<EVStationDTO>> GetEVStationsPerCompany(string companyName);
     }
 }

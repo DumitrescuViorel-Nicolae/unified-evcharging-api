@@ -2,6 +2,7 @@
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces.PaymentTransactionRepository;
+using Domain.Interfaces.RegisteredCompaniesRepository;
 using Domain.Models;
 using Microsoft.Extensions.Configuration;
 using Stripe;
@@ -17,9 +18,10 @@ namespace Application.Services
         private readonly PaymentIntentService _paymentIntentService;
 
         private readonly IPaymentTransactionRepository _paymentRepository;
+        private readonly ICompaniesRepository _companies;
         private readonly IMapper _mapper;
 
-        public PaymentService(IConfiguration configuration, IPaymentTransactionRepository paymentRepository, IMapper mapper)
+        public PaymentService(IConfiguration configuration, IPaymentTransactionRepository paymentRepository, IMapper mapper, ICompaniesRepository companies)
         {
             StripeAPIKey = configuration["Stripe:APIKey"];
             StripeConfiguration.ApiKey = StripeAPIKey;
@@ -29,6 +31,7 @@ namespace Application.Services
             _paymentIntentService = new();
             _paymentRepository = paymentRepository;
             _mapper = mapper;
+            _companies = companies;
         }
 
         /// <summary>
@@ -39,10 +42,14 @@ namespace Application.Services
         /// <param name="amount"></param>
         /// <param name="paymentMethodId"></param>
         /// <returns></returns>
-        public async Task<GeneralResponse<PaymentIntent>> ProcessPayment(string evStationStripeAccountId,
+        public async Task<GeneralResponse<PaymentIntent>> ProcessPayment(string evStationName,
             decimal amount = 1,
             string paymentMethodId = "pm_card_visa")
         {
+
+            var company = await _companies.GetByNameAsync(evStationName);
+            var evStationStripeAccountId = company.StripeAccountID;
+
             // hardcoded for now
             // stripe test data
             var options = new PaymentIntentCreateOptions

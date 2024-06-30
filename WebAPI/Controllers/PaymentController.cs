@@ -19,9 +19,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("processEVPayment")]
-        public async Task<IActionResult> ProcessPayment(string stripeAccountID)
+        public async Task<IActionResult> ProcessPayment(string companyName)
         {
-            var payment = await _paymentService.ProcessPayment(stripeAccountID);
+            var payment = await _paymentService.ProcessPayment(companyName);
             return Ok(payment);
         }
 

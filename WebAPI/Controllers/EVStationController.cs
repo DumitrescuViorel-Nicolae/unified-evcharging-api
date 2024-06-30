@@ -27,6 +27,13 @@ namespace WebAPI.Controllers
             return result;
         }
 
+        [HttpGet("getStationsPerCompany")]
+
+        public async Task<List<EVStationDTO>> GetEVStationsPerCompany(string companyName)
+        {
+            return await _evStationService.GetEVStationsPerCompany(companyName);
+        }
+
         [HttpPost("addEVStation")] 
         public async Task<GeneralResponse<string>> AddEVStation([FromBody]AddEVStationDTO evStation)
         {

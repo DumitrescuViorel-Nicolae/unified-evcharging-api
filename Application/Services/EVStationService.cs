@@ -83,12 +83,42 @@ namespace Application.Services
 
             return evStationDTOs;
         }
+
+        public async Task<List<EVStationDTO>> GetEVStationsPerCompany(string companyName)
+        {
+            var stations = await _evStations.GetStationsPerCompany(companyName);
+            var connectorStatuses = await _connectorStatusRepository.GetAllAsync();
+
+            var evStationDTOs = stations.Select(station =>
+            {
+                var dto = _mapper.Map<EVStationDTO>(station);
+
+
+                // Map connector statuses for each ConnectorDetailDto
+                foreach (var connectorDetail in dto.ConnectorDetails)
+                {
+                    connectorDetail.ConnectorsStatuses = connectorStatuses
+                        .Where(status => status.ConnectorDetailsId == connectorDetail.ID)
+                        .Select(status => new ConnectorStatusDto
+                        {
+                            State = status.State,
+                            PhysicalReference = status.PhysicalReference
+                        }).ToList();
+                }
+
+                return dto;
+            }).ToList();
+
+            return evStationDTOs;
+        }
+
         public async Task<GeneralResponse<string>> AddEVStation(AddEVStationDTO newEVStation)
         {
             try
             {
                 var company = await _companies.GetByNameAsync(newEVStation.CompanyName);
                 var evStation = _mapper.Map<EVStation>(newEVStation);
+
                 evStation.CompanyId = company.Id;
                 evStation.Website = company.Website;
                 evStation.TotalNumberOfConnectors = newEVStation.ConnectorDetails.Count();
