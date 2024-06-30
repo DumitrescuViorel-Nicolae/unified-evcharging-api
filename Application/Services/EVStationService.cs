@@ -137,7 +137,6 @@ namespace Application.Services
                 return new GeneralResponse<string>(false, $"Error in creating a new EV Station - {ex.Message}");
             }
         }
-
         public async Task<GeneralResponse<string>> DeleteEVStationById(int id)
         {
             try

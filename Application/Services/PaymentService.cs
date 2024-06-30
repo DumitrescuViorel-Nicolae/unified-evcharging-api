@@ -175,12 +175,20 @@ namespace Application.Services
                 },
                 Dob = new DobOptions { Day = 10, Month = 11, Year = 1980 },
                 SsnLast4 = "0000",
-                Phone = accountDetails.UserAccount.PhoneNumber, //needs to be US format to pass verification
+                Phone = "(206) 342-8631", //needs to be US format to pass verification
                 Email = accountDetails.UserAccount.Email,
                 Relationship = new PersonRelationshipOptions { Executive = true },
             };
 
-            await _stripePersonService.UpdateAsync(connectedAccountID, personID, personUpdatesOptions);
+            try
+            {
+                await _stripePersonService.UpdateAsync(connectedAccountID, personID, personUpdatesOptions);
+
+            }
+            catch (Exception e)
+            {
+               Console.WriteLine("Error stripe:",e.Message);
+            }
         }
 
         private async Task<string> AddPersonToBusiness(string connectedAccountID)

@@ -70,6 +70,7 @@ namespace Application.Services
                         var company = new RegisteredCompany
                         {
                             UserId = createdUser.Id,
+                            StripeAccountID="placeholder",
                             CompanyName = user.CompanyDetails.CompanyName,
                             Country = user.CompanyDetails.Country,
                             City = user.CompanyDetails.City,
@@ -78,7 +79,17 @@ namespace Application.Services
                             TaxNumber = user.CompanyDetails.TaxNumber,
                             ZipCode = user.CompanyDetails.ZipCode
                         };
-                        var registeredCompany = await _companies.AddAsync(company);
+                        var registeredCompany = new RegisteredCompany();
+                        try
+                        {
+                            registeredCompany = await _companies.AddAsync(company);
+
+                        }
+                        catch (Exception e)
+                        {
+
+                            return new GeneralResponse<string>(false, e.Message);
+                        }
 
                         if (registeredCompany is null) { return new GeneralResponse<string>(false, "Company registration failed!"); }
 
