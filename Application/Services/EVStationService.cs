@@ -149,7 +149,7 @@ namespace Application.Services
                             var id = insertedDetail.Id;
                             var connectorStatus = new ConnectorStatus
                             {
-                                PhysicalReference = i.ToString(),
+                                PhysicalReference = (i+1).ToString(),
                                 State = "AVAILABLE",
                                 ConnectorDetailsId = insertedDetail.Id
                             };
